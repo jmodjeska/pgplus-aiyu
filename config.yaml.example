@@ -1,0 +1,28 @@
+log: 'logs/output.log'
+default_profile: 'test'
+
+profiles:
+    test:
+        talker_name: 'talker_test'
+        ip: '0.0.0.0'
+        port: '2020'
+        username: 'aiyu'
+        password: 'hunter'
+        prompt: 'PG\+\>'
+
+    prod:
+        talker_name: 'real-talker-name'
+        ip: '999.999.999.999'
+        port: '2020'
+        username: 'aiyu'
+        password: 'hunter2'
+        prompt: 'PG\+\>'
+
+timings:
+    idle_interval:       10 # mins
+    clear_log_interval:  60 # mins
+    stack_read_interval:  2 # secs
+    session_duration:     2 # hours
+
+triggers:
+    direct_msgs: ["tells you", "asks of you", "exclaims to you"]
