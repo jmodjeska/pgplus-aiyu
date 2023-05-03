@@ -15,7 +15,7 @@ class ConnectTelnet
     @port = cfg(@profile, 'port')
     @name = cfg(@profile, 'talker_name')
     @prompt = cfg(@profile, 'prompt')
-    puts "-=> Conencting to: #{@name}"
+    puts "-=> Connecting to: #{@name}"
     @client = new_client
   end
 
@@ -40,7 +40,7 @@ class ConnectTelnet
         "Is the talker running?\n"
     end
 
-1    # Validate connection
+    # Validate connection
     result = IO.readlines(LOG)[1].chomp!
     unless result == "Connected to #{@ip}."
       abort "Talker connection failed (result: #{result})"

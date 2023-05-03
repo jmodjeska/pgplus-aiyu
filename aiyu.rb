@@ -10,7 +10,7 @@ LOG = CONFIG.dig('log')
 
 o = Optimist::options do
   banner "\nSynopsis: ruby aiyu.rb\n\n"
-  opt :profile, "Specify a talker profile)",
+  opt :profile, "Specify a talker profile",
     :default => CONFIG.dig('default_profile')
 end
 
