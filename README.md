@@ -41,14 +41,22 @@ Install dependencies
 
 ## Configuration
 
-**On the talker ...**
+### On the talker ...
 
 1. Setup the `aiyu` character (you can name it whatever you want) as a regular resident, with a password, title, description, etc. At this time I do not recommend granting it the `robot` priv, but I'll work on enabling that in a future update.
 
-**In aiyu/config.yaml ...**
+### In aiyu/config.yaml ...
 
 1. Configure the test / prod talker credentials, IPs, ports, etc. 
 1. **Make sure the prompt in config matches aiyu's prompt on your talker.** You have to get this exactly right or nothing will work. See [notes on prompt configuration here](https://github.com/jmodjeska/pgplus-test#prompt).
+
+### Locally (wherever you are going to run `aiyu.rb`)
+
+Make sure the environment variable `OPENAI_API_KEY` is set. For example, in `.bash_profile`:
+
+```
+export OPENAI_API_KEY="123secretAPIkey"
+```
 
 ## Usage
 
