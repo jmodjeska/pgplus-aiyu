@@ -1,5 +1,5 @@
-# PG+ 爱语 (Aiyu) [WIP - Not Ready for Use]
-爱语 (Aiyu) is a ChatGPT-powered, Ruby chatbot designed to interact, as a standalone user, with PG+ talkers. 
+# PG+ Aiyu (爱语) [WIP - Not Ready for Use]
+Aiyu is a ChatGPT-powered, Ruby chatbot designed to interact, as a standalone user, with PG+ talkers. 
 
 ## Synopsis
 
