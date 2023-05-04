@@ -57,6 +57,24 @@ module Actions
     end
   end
 
+  def check_disclaimer(p)
+    d_log = YAML.load_file(CONFIG.dig('disclaimer_log'))
+    puts CONFIG.dig('disclaimer_log')
+    return d_log.dig(p)
+  end
+
+  def process_disclaimer(h, p, msg)
+    d_log = YAML.load_file(CONFIG.dig('disclaimer_log'))
+    disclaimer = YAML.load_file(CONFIG.dig('disclaimer'))
+    if (msg.downcase == "i agree")
+      File.write(d_log, "#{p}: '#{Time.now}'", mode: 'a+')
+      tell(h, p, disclaimer.dig('STAGE 2'))
+    else
+      tell(h, p, disclaimer.dig('STAGE 1a'))
+      tell(h, p, disclaimer.dig('STAGE 1b'))
+    end
+  end
+
   def clear_log(h, log)
     clear_log_interval = CONFIG.dig('timings', 'clear_log_interval')
     if (Time.now.min % clear_log_interval == 0) && (Time.now.sec % 60 == 0)

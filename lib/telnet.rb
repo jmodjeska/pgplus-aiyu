@@ -1,5 +1,4 @@
 require 'net-telnet'
-require 'yaml'
 
 private def cfg(profile, key)
   return CONFIG.dig('profiles', profile, key)
@@ -66,10 +65,6 @@ class ConnectTelnet
     client.cmd(cfg(@profile, 'password'))
     sleep 1 # Avoid exit before forked process completes
     return client
-  end
-
-  def prompt
-    return
   end
 
   def send(cmd)

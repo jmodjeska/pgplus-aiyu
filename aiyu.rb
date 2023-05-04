@@ -1,8 +1,9 @@
 Dir[File.join(__dir__, 'lib', '*.rb')].each { |file| require file }
 require 'optimist'
+require 'yaml'
 include Actions
 
-CONFIG = YAML.load_file('config.yaml')
+CONFIG = YAML.load_file('config/config.yaml')
 LOG = CONFIG.dig('log')
 
 ##################################################
@@ -34,10 +35,14 @@ begin
     do_idle_command(h)
     get_stack(h).each do |queued|
       p, msg, callback = queued
-      history = s.get_history(p)
-      response = ChatGPT.new(msg, history).get_response
-      process_callback(h, callback, p, response)
-      s.add_to_history(p, [msg, response])
+      if check_disclaimer(p)
+        history = s.get_history(p)
+        response = ChatGPT.new(msg, history).get_response
+        process_callback(h, callback, p, response)
+        s.add_to_history(p, [msg, response])
+      else
+        process_disclaimer(h, p, msg)
+      end
     end
     clear_log(h, LOG)
     sleep 1
