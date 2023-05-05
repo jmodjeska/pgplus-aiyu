@@ -39,4 +39,6 @@ class Sessions
     end
     return @history[p]
   end
+
+  # TODO: Handle room / channel sessions
 end

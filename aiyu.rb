@@ -2,6 +2,7 @@ Dir[File.join(__dir__, 'lib', '*.rb')].each { |file| require file }
 require 'optimist'
 require 'yaml'
 include Actions
+include QueueMgr
 
 CONFIG = YAML.load_file('config/config.yaml')
 LOG = CONFIG.dig('log')
@@ -33,7 +34,7 @@ begin
   h.send("main")
   until (shutdown_event) do
     do_idle_command(h)
-    get_stack(h).each do |queued|
+    get_queue(h, profile).each do |queued|
       p, msg, callback = queued
       if check_disclaimer(p)
         history = s.get_history(p)

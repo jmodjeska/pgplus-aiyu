@@ -1,9 +1,19 @@
+require_relative 'strings'
+
 module Actions
-  private def clean_ansi(i)
-    o = i.gsub(/\e\[([;\d]+)?m/, '').gsub(/\n/, ' ').gsub(/\s+/, ' ').strip
-    o.delete!("\r\n")
-    o.delete!("^\u{0000}-\u{007F}")
-    return o
+  include Strings
+
+  def process_callback(h, cmd, p, msg)
+    case cmd
+    when :tell
+      tell(h, p, msg)
+    when :say
+      room_or_channel(h, p, msg, 'say')
+    when *CONFIG.dig('triggers', 'channel_commands')
+      room_or_channel(h, p, msg, cmd)
+    else
+      puts "Undefined callback command: #{cmd}"
+    end
   end
 
   def toggle_pager(h, desired_state)
@@ -23,37 +33,24 @@ module Actions
     end
   end
 
-  def get_stack(h)
-    direct_msgs = CONFIG.dig('triggers', 'direct_msgs')
-    stack_read_interval = CONFIG.dig('timings', 'stack_read_interval')
-    stack = []
-    if (Time.now.sec % stack_read_interval == 0)
-      o = h.send('').split(/\r\n\e/)
-      o.each do |line|
-        line = clean_ansi(line)
-        if (line[0] == ">") && (direct_msgs.any? { |s| line.include?(s) })
-          p, msg = line.match(/^> (\S+).*?\'(.*?)\'$/).captures
-          stack << [p, msg, :tell]
-        end
-      end
-    end
-    return stack
-  end
-
   def tell(h, p, msg)
-    chunks = msg.scan(/.{1,250}/)
+    chunks = split_string(msg)
     chunks.each do |chunk|
       h.send(".#{p} #{chunk}")
       sleep 1
     end
   end
 
-  def process_callback(h, cmd, p, msg)
-    case cmd
-    when :tell
-      tell(h, p, msg)
-    else
-      puts "Undefined callback command: #{cmd}"
+  def room_or_channel(h, p, msg, cmd)
+    chunks = split_string(msg)
+    chunks.each_with_index do |chunk, i|
+      if i == 0
+        chunk[0] = chunk[0].downcase
+        h.send("#{cmd} #{p}, #{chunk}")
+      else
+        h.send("#{cmd} #{chunk}")
+      end
+      sleep 1
     end
   end
 

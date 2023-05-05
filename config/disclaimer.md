@@ -4,9 +4,9 @@ _Updated 2023.05.03_
 
 Please review these terms and conditions and then reply back to Aiyu with 'I agree' if you agree and want to proceed.
 
-## Aiyu is a ChatGPT-connect AI chat bot
+## Aiyu is a ChatGPT-connected AI chat bot
 
-Aiyu comes with all the caveats, warnings, and limitations of ChatGPT, including:
+Aiyu comes with all the caveats, warnings, and limitations of ChatGPT, including, but not limited to:
 
 1. **May provide incorrect information.** Do not rely on anything Aiyu tells you.
 1. **May produce harmful instructions or biased content.** Do not rely on Aiyu for any consequential or serious advice about anything, real or imaginary.
