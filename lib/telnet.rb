@@ -27,7 +27,7 @@ class ConnectTelnet
         "Prompt" => /#{@prompt} \z/n,
         "Binmode" => true,
         "Telnetmode" => true,
-        "Timeout" => 3,
+        "Timeout" => 60,
         "Output_log" => LOG,
         "Dump_Log" => true,
         "Debug_Output" => true
@@ -48,7 +48,7 @@ class ConnectTelnet
     # Login + validation
     client.puts(@username)
     fork do
-      sleep 1
+      sleep CONFIG.dig('timings', 'slowness_tolerance')
       if system("grep 'try again!' #{LOG} > /dev/null") then
         puts "Talker login failed (password) for #{@username}"
       elsif system("grep 'already logged on here' #{LOG} > /dev/null")

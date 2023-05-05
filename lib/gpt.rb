@@ -32,7 +32,9 @@ class ChatGPT
       reply = JSON.parse(response.body).dig('choices', 0, 'message', 'content')
       return reply.gsub(/\n/, ' ')
     rescue StandardError => e
-      return "Error: #{e}"
+      puts "DEBUG: Error: #{e}"
+      return "Oh no! Something went wrong and I can't connect with ChatGPT. "\
+        "Sorry about that! I've logged the error so an admin can investigate."
     end
   end
 end

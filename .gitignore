@@ -57,3 +57,4 @@ build-iPhoneSimulator/
 
 config.yaml
 output.log
+.vscode
