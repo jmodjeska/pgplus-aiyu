@@ -1,7 +1,9 @@
 module Strings
 
   def clean_ansi(str)
-    o = str.gsub(/\e\[([;\d]+)?m/, '').gsub(/\n/, ' ').gsub(/\s+/, ' ').strip
+    o = str.gsub(/\e\[([;\d]+)?m/, '')
+    o = o.gsub(/\n|\s+/, ' ').strip
+    o = o.gsub(/\[m/, '')
     o.delete!("\r\n")
     o.delete!("^\u{0000}-\u{007F}")
     return o

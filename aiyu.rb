@@ -22,16 +22,11 @@ unless CONFIG.dig('profiles', profile)
 end
 
 ##################################################
-# RUNTIME
+# MAIN LOOP
 
-shutdown_event = false
-
-begin
-  h = ConnectTelnet.new(profile)
-  s = Sessions.new
-
-  toggle_pager(h, "unpaged")
-  h.send("main")
+def main_loop(h, s, profile)
+  sleep CONFIG.dig('timings', 'slowness_tolerance')
+  shutdown_event = false
   until (shutdown_event) do
     do_idle_command(h)
     get_queue(h, profile).each do |queued|
@@ -48,7 +43,18 @@ begin
     clear_log(h, LOG)
     sleep 1
   end
-  h.done
+end
+
+##################################################
+# RUNTIME
+
+h = ConnectTelnet.new(profile)
+s = Sessions.new
+toggle_pager(h, "unpaged")
+h.send("main")
+
+begin
+  main_loop(h, s, profile)
 rescue Net::ReadTimeout => e
   puts "\n-=> Timed out waiting for talker response."
   h.done

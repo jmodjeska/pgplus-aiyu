@@ -46,7 +46,7 @@ class ConnectTelnet
     client.puts(@username)
     fork do
       sleep CONFIG.dig('timings', 'slowness_tolerance')
-      if system("grep 'try again!' #{LOG} > /dev/null") then
+      if system("grep 'try again!' #{LOG} > /dev/null")
         puts "Talker login failed (password) for #{@username}"
       elsif system("grep 'already logged on here' #{LOG} > /dev/null") ||
         system("grep 'Last logged in' #{LOG} > /dev/null")
@@ -70,7 +70,8 @@ class ConnectTelnet
   def done
     @client.cmd("quit")
     sleep 0.1
-    if system("grep 'Thanks for visiting' #{LOG} > /dev/null") then
+    if system("grep 'Thank you for visiting' #{LOG} > /dev/null") ||
+      system("grep 'Thanks for visiting' #{LOG} > /dev/null")
       puts "-=> Talker logout successful for #{@username}"
     else
       puts "-=> Disconnected ungracefully."

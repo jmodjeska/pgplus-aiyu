@@ -34,8 +34,16 @@ class ChatGPT
       return reply.gsub(/\n/, ' ')
     rescue StandardError => e
       puts "DEBUG: Error: #{e}"
-      return "Oh no! Something went wrong and I can't connect with ChatGPT. "\
-        "Sorry about that! I've logged the error so an admin can investigate."
+      if e.is_a?(Hash) && e.dig('error', 'message')
+        if e.dig('error', 'message').start_with?("Rate limit")
+          return "Sorry, I've exceeded my rate limit with ChatGPT. "\
+            "Please try again in a little while."
+        end
+      else
+        return "Oh no! Something went wrong and I can't connect to "\
+          "ChatGPT. Sorry about that! I've logged the error so an "\
+          "admin can investigate."
+      end
     end
   end
 end

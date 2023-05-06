@@ -12,6 +12,11 @@ module QueueMgr
       o = h.send('').split(/\r\n\e/)
       o.each do |line|
         line = clean_ansi(line)
+        puts line
+        unless line.valid_encoding?
+          puts "-=> Invalid encoding detected. Skipping."
+          next
+        end
         msgs = parse_messages(line, profile)
         if msgs.keys.length == 3
           case msgs[:loc]
