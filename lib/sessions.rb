@@ -1,7 +1,7 @@
 require 'time'
 
-# Note: session history (h) follows a player in the case of a direct 
-# msg (tell); else it treats the main room or specified channel as a 
+# Note: session history (h) follows a player in the case of a direct
+# msg (tell); else it treats the main room or specified channel as a
 # shared group session.
 
 class Sessions
@@ -17,8 +17,8 @@ class Sessions
   private def encode_msgset(msgset)
     outbound, inbound = msgset
     arr = [
-      {"role": "user", "content": outbound},
-      {"role": "assistant", "content": inbound}
+      {"role": "user", "content": outbound.encode(Encoding::UTF_8)},
+      {"role": "assistant", "content": inbound.encode(Encoding::UTF_8)}
     ]
     return arr
   end
