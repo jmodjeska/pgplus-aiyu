@@ -16,6 +16,11 @@ class Sessions
 
   private def encode_msgset(msgset)
     o, i = msgset
+    [o, i].each do |str|
+      str.force_encoding('UTF-8')
+      str.encode!('UTF-8', 'binary',
+        invalid: :replace, undef: :replace, replace: '')
+    end
     arr = [
       {"role": "user", "content": o},
       {"role": "assistant", "content": i}
@@ -44,12 +49,5 @@ class Sessions
       @history[h] = encode_msgset(msgset)
     end
     return @history[h]
-  end
-
-  def encode_all_history
-    @history.each do |key, value|
-      @history[key] = value.encode('UTF-8', 'binary',
-        invalid: :replace, undef: :replace, replace: '')
-    end
   end
 end

@@ -29,7 +29,8 @@ class ChatGPT
       request.body = body.to_json
       response = http.request(request)
       puts "DEBUG: #{response.body.to_s}"
-      reply = JSON.parse(response.body).dig('choices', 0, 'message', 'content')
+      reply = JSON.parse(response.body.force_encoding('UTF-8'))
+        .dig('choices', 0, 'message', 'content')
       return reply.gsub(/\n/, ' ')
     rescue StandardError => e
       puts "DEBUG: Error: #{e}"
