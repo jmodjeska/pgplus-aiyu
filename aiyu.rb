@@ -38,6 +38,7 @@ begin
       p, msg, callback = queued
       if check_disclaimer(p)
         history = s.get_history(p, callback)
+        s.encode_all_history
         response = ChatGPT.new(msg, history).get_response
         process_callback(h, callback, p, response)
         s.add_to_history(p, [msg, response], callback)

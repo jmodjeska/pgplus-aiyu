@@ -45,4 +45,11 @@ class Sessions
     end
     return @history[h]
   end
+
+  def encode_all_history
+    @history.each do |key, value|
+      @history[key] = value.encode('UTF-8', 'binary',
+        invalid: :replace, undef: :replace, replace: '')
+    end
+  end
 end
