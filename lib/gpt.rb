@@ -30,7 +30,7 @@ class ChatGPT
       response = http.request(request)
       puts "DEBUG: #{response.body.to_s}"
       reply = JSON.parse(response.body).dig('choices', 0, 'message', 'content')
-      return reply.gsub(/\n/, ' ').force_encoding("ASCII-8BIT")
+      return reply.gsub(/\n/, ' ').encode('UTF-8')
     rescue StandardError => e
       puts "DEBUG: Error: #{e}"
       return "Oh no! Something went wrong and I can't connect with ChatGPT. "\
