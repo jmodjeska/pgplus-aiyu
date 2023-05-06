@@ -74,11 +74,15 @@ module Actions
     disclaimer = YAML.load_file(CONFIG.dig('disclaimer'))
     if (msg.downcase == "i agree")
       File.write(d_log, "#{p}: '#{Time.now.to_s}'\n", mode: 'a+')
-      tell(h, p, disclaimer.dig('STAGE 2a').gsub(/\s+/, ' '))
-      tell(h, p, disclaimer.dig('STAGE 2b').gsub(/\s+/, ' '))
+      disclaimer.dig('STAGE 2').each do |k, v|
+        puts v
+        tell(h, p, v.gsub(/\s+/, ' '))
+      end
     else
-      tell(h, p, disclaimer.dig('STAGE 1a').gsub(/\s+/, ' '))
-      tell(h, p, disclaimer.dig('STAGE 1b').gsub(/\s+/, ' '))
+      disclaimer.dig('STAGE 1').each do |k, v|
+        puts v
+        tell(h, p, v.gsub(/\s+/, ' '))
+      end
     end
   end
 
