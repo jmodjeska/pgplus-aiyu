@@ -79,3 +79,9 @@ And of course, login to your talker to interact with aiyu.
 ## TODO
 
 * Smartbot code update for PG+ to allow aiyu to run as a proper robot 
+
+## You might also like
+ 
+* [PG+ Test Harness](https://github.com/jmodjeska/pgplus-test)
+* [PG+ Short Link Generator](https://github.com/jmodjeska/pgplus-shortlink)
+* [PG+ Cocktail Recipe](https://github.com/jmodjeska/pgplus-cocktail)
