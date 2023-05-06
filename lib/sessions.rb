@@ -1,5 +1,9 @@
 require 'time'
 
+# Note: session history (h) follows a player in the case of a direct 
+# msg (tell); else it treats the main room or specified channel as a 
+# shared group session.
+
 class Sessions
   def initialize
     @session, @history = {}, {}
@@ -19,26 +23,26 @@ class Sessions
     return arr
   end
 
-  def get_history(p)
-    if ( (@session.key?(p)) && !(expired(p)) && (@history.key?(p)) )
-      @session[p] = Time.now
-      return @history[p]
-    elsif @session.key?(p)
-      @session.delete(p)
-      @history.delete(p)
+  def get_history(p, command)
+    h = (command == :tell) ? p : command
+    if ( (@session.key?(h)) && !(expired(h)) && (@history.key?(h)) )
+      @session[h] = Time.now
+      return @history[h]
+    elsif @session.key?(h)
+      @session.delete(h)
+      @history.delete(h)
     end
-    @session[p] = Time.now
+    @session[h] = Time.now
     return []
   end
 
-  def add_to_history(p, msgset)
-    if @history.key?(p)
-      @history[p].concat encode_msgset(msgset)
+  def add_to_history(p, msgset, command)
+    h = (command == :tell) ? p : command
+    if @history.key?(h)
+      @history[h].concat encode_msgset(msgset)
     else
-      @history[p] = encode_msgset(msgset)
+      @history[h] = encode_msgset(msgset)
     end
-    return @history[p]
+    return @history[h]
   end
-
-  # TODO: Handle room / channel sessions
 end

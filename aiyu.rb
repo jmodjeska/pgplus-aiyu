@@ -37,10 +37,10 @@ begin
     get_queue(h, profile).each do |queued|
       p, msg, callback = queued
       if check_disclaimer(p)
-        history = s.get_history(p)
+        history = s.get_history(p, callback)
         response = ChatGPT.new(msg, history).get_response
         process_callback(h, callback, p, response)
-        s.add_to_history(p, [msg, response])
+        s.add_to_history(p, [msg, response], callback)
       else
         process_disclaimer(h, p, msg)
       end
@@ -50,6 +50,6 @@ begin
   end
   h.done
 rescue Net::ReadTimeout => e
-  puts "\n-=> Timed out waiting for talker response "\
-    "(is `prompt` configured correctly?)"
+  puts "\n-=> Timed out waiting for talker response."
+  h.done
 end

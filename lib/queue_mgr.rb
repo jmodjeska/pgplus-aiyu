@@ -4,11 +4,11 @@ module QueueMgr
   include Strings
 
   def get_queue(h, profile)
-    queue_read_interval = CONFIG.dig('timings', 'queue_read_interval')
+    q_read_interval  = CONFIG.dig('timings',  'queue_read_interval')
     channel_prefixes = CONFIG.dig('triggers', 'channel_prefixes')
     channel_commands = CONFIG.dig('triggers', 'channel_commands')
     q = []
-    if (Time.now.sec % queue_read_interval == 0)
+    if (Time.now.sec % q_read_interval == 0)
       o = h.send('').split(/\r\n\e/)
       o.each do |line|
         line = clean_ansi(line)

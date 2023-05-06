@@ -27,7 +27,7 @@ class ConnectTelnet
         "Prompt" => /#{@prompt} \z/n,
         "Binmode" => true,
         "Telnetmode" => true,
-        "Timeout" => 60,
+        "Timeout" => CONFIG.dig('timings', 'telnet_timeout'),
         "Output_log" => LOG,
         "Dump_Log" => true,
         "Debug_Output" => true
@@ -78,6 +78,8 @@ class ConnectTelnet
     sleep 0.1
     if system("grep 'Thanks for visiting' #{LOG} > /dev/null") then
       puts "-=> Talker logout successful for #{@username}"
+    else 
+      puts "-=> Disconnected ungracefully."
     end
     puts "\n"
   end

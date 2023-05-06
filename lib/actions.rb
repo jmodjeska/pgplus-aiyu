@@ -8,9 +8,9 @@ module Actions
     when :tell
       tell(h, p, msg)
     when :say
-      room_or_channel(h, p, msg, 'say')
+      say_to_room_or_channel(h, p, msg, 'say')
     when *CONFIG.dig('triggers', 'channel_commands')
-      room_or_channel(h, p, msg, cmd)
+      say_to_room_or_channel(h, p, msg, cmd)
     else
       puts "Undefined callback command: #{cmd}"
     end
@@ -41,7 +41,7 @@ module Actions
     end
   end
 
-  def room_or_channel(h, p, msg, cmd)
+  def say_to_room_or_channel(h, p, msg, cmd)
     chunks = split_string(msg)
     chunks.each_with_index do |chunk, i|
       if i == 0
@@ -65,10 +65,10 @@ module Actions
     disclaimer = YAML.load_file(CONFIG.dig('disclaimer'))
     if (msg.downcase == "i agree")
       File.write(d_log, "#{p}: '#{Time.now.to_s}'\n", mode: 'a+')
-      tell(h, p, disclaimer.dig('STAGE 2'))
+      tell(h, p, disclaimer.dig('STAGE 2').gsub(/\s+/, ' '))
     else
-      tell(h, p, disclaimer.dig('STAGE 1a'))
-      tell(h, p, disclaimer.dig('STAGE 1b'))
+      tell(h, p, disclaimer.dig('STAGE 1a').gsub(/\s+/, ' '))
+      tell(h, p, disclaimer.dig('STAGE 1b').gsub(/\s+/, ' '))
     end
   end
 
