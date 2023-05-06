@@ -16,9 +16,11 @@ class Sessions
 
   private def encode_msgset(msgset)
     outbound, inbound = msgset
+    outbound.encode('UTF-8', invalid: :replace, undef: :replace, replace: '?')
+    inbound.encode('UTF-8', invalid: :replace, undef: :replace, replace: '?')
     arr = [
-      {"role": "user", "content": outbound.encode(Encoding::UTF_8)},
-      {"role": "assistant", "content": inbound.encode(Encoding::UTF_8)}
+      {"role": "user", "content": outbound},
+      {"role": "assistant", "content": inbound}
     ]
     return arr
   end
