@@ -16,6 +16,10 @@ Aiyu comes with all the caveats, warnings, and limitations of ChatGPT, including
 
 You agree not to hold the UberWorld talker, its owners, staff, admin, other users, or hosting company accountable for anything Aiyu says or does.
 
+## Always follow UberWorld's Terms of Use
+
+Aiyu is not an excuse to behave badly. All of UberWorld's normal [Terms of Use](https://uberworld.org/disclaimer.html) apply. Do not abuse the AI bot; do not use it to harass others; do not do/say anything that violates UberWorld's Terms of Use.
+
 ## Everything you tell Aiyu is logged
 
 This is a beta experiment that is being actively developed, debugged, and evolved. Its developer depends on rich data to understand how it is used and when and why it breaks. That means everything is logged and subject to review.

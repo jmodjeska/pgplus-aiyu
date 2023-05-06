@@ -1,4 +1,4 @@
-# PG+ Aiyu [WIP - Not Ready for Use]
+# PG+ Aiyu
 Aiyu (爱语) is a ChatGPT-powered, Ruby chatbot designed to interact, as a standalone user, with PG+ talkers. 
 
 ## Synopsis
@@ -79,5 +79,3 @@ And of course, login to your talker to interact with aiyu.
 ## TODO
 
 * Smartbot code update for PG+ to allow aiyu to run as a proper robot 
-* Terms of service / disclaimer for users to interact with aiyu / ChatGPT
-* I don't know, probably other stuff!?
