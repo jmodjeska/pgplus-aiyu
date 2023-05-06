@@ -25,7 +25,6 @@ class ConnectTelnet
         "Prompt" => /#{@prompt} \z/n,
         "Binmode" => true,
         "Telnetmode" => true,
-        "encoding" => 'ISO-8859-1',
         "Timeout" => CONFIG.dig('timings', 'telnet_timeout'),
         "Output_log" => LOG,
         "Dump_Log" => true,

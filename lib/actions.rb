@@ -34,6 +34,7 @@ module Actions
   end
 
   def tell(h, p, msg)
+    msg.force_encoding('ASCII-8BIT')
     chunks = split_string(msg)
     chunks.each do |chunk|
       h.send(".#{p} #{chunk}")
@@ -42,6 +43,7 @@ module Actions
   end
 
   def say_to_room_or_channel(h, p, msg, cmd)
+    msg.force_encoding('ASCII-8BIT')
     chunks = split_string(msg)
     chunks.each_with_index do |chunk, i|
       if i == 0

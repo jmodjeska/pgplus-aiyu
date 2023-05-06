@@ -17,8 +17,8 @@ class Sessions
   private def encode_msgset(msgset)
     o, i = msgset
     arr = [
-      {"role": "user", "content": o.force_encoding(Encoding::ISO_8859_1)},
-      {"role": "assistant", "content": i.force_encoding(Encoding::ISO_8859_1)}
+      {"role": "user", "content": o},
+      {"role": "assistant", "content": i}
     ]
     return arr
   end
