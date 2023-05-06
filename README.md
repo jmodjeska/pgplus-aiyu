@@ -79,5 +79,3 @@ And of course, login to your talker to interact with aiyu.
 ## TODO
 
 * Smartbot code update for PG+ to allow aiyu to run as a proper robot 
-* Terms of service / disclaimer for users to interact with aiyu / ChatGPT
-* I don't know, probably other stuff!?
