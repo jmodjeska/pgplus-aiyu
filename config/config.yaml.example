@@ -1,9 +1,11 @@
 log: 'logs/output.log'
+disclaimer: 'config/disclaimer.yaml'
+disclaimer_log: 'logs/disclaimer.log.yaml'
 default_profile: 'test'
 
 profiles:
     test:
-        talker_name: 'talker_test'
+        talker_name: 'talker_name'
         ip: '0.0.0.0'
         port: '2020'
         username: 'aiyu'
@@ -21,8 +23,14 @@ profiles:
 timings:
     idle_interval:       10 # mins
     clear_log_interval:  60 # mins
-    stack_read_interval:  2 # secs
+    queue_read_interval:  2 # secs
     session_duration:     2 # hours
+    max_requests:        50 # requests
+    slowness_tolerance:   3 # seconds
+    telnet_timeout:       3 # seconds
 
 triggers:
     direct_msgs: ["tells you", "asks of you", "exclaims to you"]
+    room_msgs: ["says", "asks", "exclaims"]
+    channel_prefixes: ["(UberChannel)", "[UberSpod]"]
+    channel_commands: ['cu', "pu"]

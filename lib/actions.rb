@@ -60,7 +60,6 @@ module Actions
   end
 
   def process_disclaimer(h, p, msg)
-    puts msg.downcase
     d_log = CONFIG.dig('disclaimer_log')
     disclaimer = YAML.load_file(CONFIG.dig('disclaimer'))
     if (msg.downcase == "i agree")

@@ -5,8 +5,6 @@ private def cfg(profile, key)
 end
 
 class ConnectTelnet
-  attr_reader :prompt, :ip
-
   def initialize(profile)
     @profile = profile
     @username = cfg(@profile, 'username')
@@ -35,8 +33,7 @@ class ConnectTelnet
     rescue Errno::EHOSTUNREACH, Net::OpenTimeout => e
       abort "Can't reach #{@ip} at port #{@port}\n"
     rescue Errno::ECONNREFUSED => e
-      abort "Connection refused to #{@ip} at port #{@port}. "\
-        "Is the talker running?\n"
+      abort "Connection refused to #{@ip} at port #{@port}.\n"
     end
 
     # Validate connection
@@ -51,11 +48,8 @@ class ConnectTelnet
       sleep CONFIG.dig('timings', 'slowness_tolerance')
       if system("grep 'try again!' #{LOG} > /dev/null") then
         puts "Talker login failed (password) for #{@username}"
-      elsif system("grep 'already logged on here' #{LOG} > /dev/null")
-        puts "Talker login successful for #{@username} "\
-          "(NOTE: user was already logged in)"
-        client.puts('')
-      elsif system("grep 'Last logged in' #{LOG} > /dev/null")
+      elsif system("grep 'already logged on here' #{LOG} > /dev/null") ||
+        system("grep 'Last logged in' #{LOG} > /dev/null")
         puts "Talker login successful for #{@username} "\
           "(use `tail -f logs/output.log` to follow along live)"
       else
@@ -78,7 +72,7 @@ class ConnectTelnet
     sleep 0.1
     if system("grep 'Thanks for visiting' #{LOG} > /dev/null") then
       puts "-=> Talker logout successful for #{@username}"
-    else 
+    else
       puts "-=> Disconnected ungracefully."
     end
     puts "\n"
