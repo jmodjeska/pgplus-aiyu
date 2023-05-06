@@ -31,7 +31,7 @@ class ChatGPT
       puts "DEBUG: #{response.body.to_s}"
       reply = JSON.parse(response.body.force_encoding('UTF-8'))
         .dig('choices', 0, 'message', 'content')
-      return reply.gsub(/\n/, ' ')
+      return reply.gsub(/\n+/, ' ')
     rescue StandardError => e
       puts "DEBUG: Error: #{e}"
       if e.is_a?(Hash) && e.dig('error', 'message')

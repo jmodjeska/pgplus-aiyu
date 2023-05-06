@@ -9,27 +9,43 @@ module Strings
     return o
   end
 
-  def split_string(str)
+  def chunk_string(str)
     chunks = []
     while str.length > 0
       if str.length <= 250
         chunks << str.strip
         break
       end
-      slice_size = 250
-      slice_size -= 1 while ![".", "!", "?"].
-        include?(str[slice_size - 1]) && slice_size > 0
-      slice_size = 250 if slice_size == 0
-      slice = str.slice!(0, slice_size).strip
+      chunk_size = 250
+      chunk_size -= 1 while ![".", "!", "?"].
+        include?(str[chunk_size - 1]) && chunk_size > 0
+      chunk_size = 250 if chunk_size == 0
+      chunk = str.slice!(0, chunk_size).strip
       if str[0] == " "
         str[0] = ""
-      elsif slice[-1] != " "
-        slice_size -= slice.length - slice.rindex(" ") - 1
-        slice = slice.slice(0, slice.rindex(" ")).strip
+      elsif chunk[-1] != " "
+        chunk_size -= chunk.length - chunk.rindex(" ") - 1
+        chunk = chunk.chunk(0, chunk.rindex(" ")).strip
       end
-      chunks << slice
+      chunks << chunk
     end
-    chunks
+    format_numbered_list(chunks)
+  end
+
+  def format_numbered_list(chunks)
+    num = ""
+    if chunks.length > 1
+      chunks.each_with_index do |chunk, i|
+        chunk.prepend(num)
+        if chunk.match(/ (\d{1,2}\.)$/)
+          num = "#{$1} "
+          chunks[i] = chunk[0...-(num.length+1)] unless chunks[i+1].nil?
+        else
+          num = ""
+        end
+      end
+    end
+    return chunks
   end
 
   def parse_messages(str, profile)
@@ -44,12 +60,12 @@ module Strings
       msgs[:loc] = :direct
     # room message
     elsif str.match(/^([a-zA-Z]+)\s
-      #{Regexp.union(room_msgs)}\s'#{name},\s(.*?)'$/ix)
+      #{Regexp.union(room_msgs)}\s'#{name}[,]?\s(.*?)'$/ix)
       msgs[:p], msgs[:msg] = $1, $2
       msgs[:loc] = :room
     # channel message
     elsif str.match(/^(#{Regexp.union(channel_prefixes)})\s([a-zA-Z]+)\s
-      #{Regexp.union(room_msgs)}\s'#{name},\s(.*?)'$/ix)
+      #{Regexp.union(room_msgs)}\s'#{name}[,]?\s(.*?)'$/ix)
       msgs[:loc], msgs[:p], msgs[:msg] = $1, $2, $3
     end
     return msgs

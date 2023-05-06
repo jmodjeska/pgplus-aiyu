@@ -25,9 +25,17 @@ module Actions
     return false
   end
 
+  def muffle_clock(h)
+    2.times do
+      o = clean_ansi(h.send('muffle clock')).lines[0]
+      return true if o.match?("You are now ignoring")
+    end
+    return false
+  end
+
   def do_idle_command(h)
     idle_interval = CONFIG.dig('timings', 'idle_interval')
-    if (Time.now.min % idle_interval == 0) && (Time.now.sec % 60 == 0)
+    if (Time.now.min % idle_interval == 0) && (Time.now.sec % 23 == 0)
       c = ['main', 'idle', 'look'].sample
       h.send(c)
     end
@@ -35,7 +43,7 @@ module Actions
 
   def tell(h, p, msg)
     msg.force_encoding('ASCII-8BIT')
-    chunks = split_string(msg)
+    chunks = chunk_string(msg)
     chunks.each do |chunk|
       h.send(".#{p} #{chunk}")
       sleep 1
@@ -44,7 +52,7 @@ module Actions
 
   def say_to_room_or_channel(h, p, msg, cmd)
     msg.force_encoding('ASCII-8BIT')
-    chunks = split_string(msg)
+    chunks = chunk_string(msg)
     chunks.each_with_index do |chunk, i|
       if i == 0
         chunk[0] = chunk[0].downcase
@@ -66,7 +74,8 @@ module Actions
     disclaimer = YAML.load_file(CONFIG.dig('disclaimer'))
     if (msg.downcase == "i agree")
       File.write(d_log, "#{p}: '#{Time.now.to_s}'\n", mode: 'a+')
-      tell(h, p, disclaimer.dig('STAGE 2').gsub(/\s+/, ' '))
+      tell(h, p, disclaimer.dig('STAGE 2a').gsub(/\s+/, ' '))
+      tell(h, p, disclaimer.dig('STAGE 2b').gsub(/\s+/, ' '))
     else
       tell(h, p, disclaimer.dig('STAGE 1a').gsub(/\s+/, ' '))
       tell(h, p, disclaimer.dig('STAGE 1b').gsub(/\s+/, ' '))
@@ -75,7 +84,7 @@ module Actions
 
   def clear_log(h, log)
     clear_log_interval = CONFIG.dig('timings', 'clear_log_interval')
-    if (Time.now.min % clear_log_interval == 0) && (Time.now.sec % 60 == 0)
+    if (Time.now.min % clear_log_interval == 0) && (Time.now.sec % 13 == 0)
       File.truncate(log, 0)
     end
   end

@@ -51,6 +51,7 @@ end
 h = ConnectTelnet.new(profile)
 s = Sessions.new
 toggle_pager(h, "unpaged")
+muffle_clock(h)
 h.send("main")
 
 begin
