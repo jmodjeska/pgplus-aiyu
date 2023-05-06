@@ -3,7 +3,7 @@ require 'json'
 
 class ChatGPT
   def initialize(msg, history)
-    @msg = msg.force_encoding("UTF-8")
+    @msg = msg.encode(Encoding::ASCII_8BIT)
     @history = history.dup
   end
 
