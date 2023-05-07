@@ -17,10 +17,10 @@ STAGE 2:
     2b: >
         I can respond to messages in the following three ways:
     2c: >
-        (1) Direct messages: e.g., '.aiyu hello';
+        (1) Direct messages: e.g., '.aiyu hello'
     2d: >
-        (2) Messages in the main room when addressed by name
-        (e.g., 'say aiyu, give me 3 facts about goats';
+        (2) Messages in the main room when addressed by name,
+        e.g., 'say aiyu, give me 3 facts about goats'
     2e: >
-        (3) Messages on the main channel when addressed by name
-        (e.g., 'cu aiyu, why is the sky blue?'.
+        (3) Messages on the main channel when addressed by name,
+        e.g., 'cu aiyu, why is the sky blue?'

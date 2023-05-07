@@ -49,7 +49,7 @@ module Strings
   end
 
   def handle_truncated_response(chunks)
-    if chunks[-1].match('[[[TRUNCATED]]]')
+    if chunks[-1].match(/\[\[\[TRUNCATED\]\]\]/)
       chunks[-1].delete!('[[[TRUNCATED]]]')
       trunc_text = "Sorry, there was more, but I had to truncate it due "\
         "to excessive length."
