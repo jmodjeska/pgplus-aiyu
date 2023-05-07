@@ -80,13 +80,20 @@ module Strings
     end
     return msgs
   end
+
+  def log(str, level)
+    levels = {
+      :info => 'green',
+      :warn => 'magenta',
+      :error => 'red'
+    }
+    color = levels[level]
+    File.write(LOG, "\n\n#{Time.now}: #{str}\n\n".send(color), mode: 'a+')
+  end
 end
 
 class String
   def red;      "\e[31m#{self}\e[0m" end
   def green;    "\e[32m#{self}\e[0m" end
-  def blue;     "\e[34m#{self}\e[0m" end
   def magenta;  "\e[35m#{self}\e[0m" end
-  def cyan;     "\e[36m#{self}\e[0m" end
-  def bold;     "\e[1m#{self}\e[22m" end
 end

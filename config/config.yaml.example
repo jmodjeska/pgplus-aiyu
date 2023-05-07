@@ -1,7 +1,6 @@
 log: 'logs/output.log'
 disclaimer: 'config/disclaimer.yaml'
 disclaimer_log: 'logs/disclaimer.log.yaml'
-learned_socials: 'config/socials.yaml'
 default_profile: 'test'
 
 profiles:
@@ -31,6 +30,7 @@ timings:
     slowness_tolerance:   3 # seconds
     telnet_timeout:       3 # seconds
     max_requests:        50 # requests
+    max_reconnects:       1 # per hour
 
 triggers:
     direct_msgs: ["tells you", "asks of you", "exclaims to you"]

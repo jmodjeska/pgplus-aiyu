@@ -7,7 +7,8 @@ require 'time'
 class Sessions
   def initialize
     @session, @history = {}, {}
-    puts "-=> GPT session manager initialized"
+    @recons = []
+    puts "-=> Session manager initialized"
   end
 
   private def expired(p)
@@ -22,11 +23,28 @@ class Sessions
       str.encode!('UTF-8', 'binary',
         invalid: :replace, undef: :replace, replace: '')
     end
-    arr = [
+    return [
       {"role": "user", "content": o},
       {"role": "assistant", "content": i}
     ]
-    return arr
+  end
+
+  def recons_available
+    return true if @recons.empty?
+    max_reconnects = CONFIG.dig('timings', 'max_reconnects')
+    last_recon = @recons.max
+    if (Time.now - last_recon) > 3600
+      @recons = []
+      return true
+    elsif @recons.count { |r| (Time.now - r) < 3600 } < max_reconnects
+      return true
+    else
+      return false
+    end
+  end
+
+  def log_recon
+    @recons << Time.now
   end
 
   def get_history(p, command)
@@ -51,4 +69,6 @@ class Sessions
     end
     return @history[h]
   end
+
+
 end

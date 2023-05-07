@@ -13,7 +13,7 @@ class ConnectTelnet
     @port = cfg(@profile, 'port')
     @name = cfg(@profile, 'talker_name')
     @prompt = cfg(@profile, 'prompt')
-    puts "-=> Connecting to: #{@name}"
+    puts "\n\n-=> Connecting to: #{@name}"
     @client = new_client
   end
 
@@ -52,7 +52,7 @@ class ConnectTelnet
       elsif system("grep 'already logged on here' #{LOG} > /dev/null") ||
         system("grep 'Last logged in' #{LOG} > /dev/null")
         puts "-=> Talker login successful for #{@username} "\
-          "(use `tail -f logs/output.log` to follow along live)\n".green
+          "(use `tail -f logs/output.log` to watch)\n".green
       else
         puts "Talker login failed for #{@username} (see #{LOG})".red
       end
@@ -75,10 +75,11 @@ class ConnectTelnet
     @client.cmd("quit")
     sleep 0.1
     if system("grep 'Thank you for visiting' #{LOG} > /dev/null") ||
-      system("grep 'Thanks for visiting' #{LOG} > /dev/null")
-      puts "-=> Talker logout successful for #{@username}\n".magenta
+      system("grep 'Thanks for visiting' #{LOG} > /dev/null") ||
+      system("grep 'please come again!' #{LOG} > /dev/null")
+      log("Talker logout successful for #{@username}", :warn)
     else
-      puts "-=> Disconnected ungracefully.\n".red
+      log("Disconnected ungracefully.", :error)
     end
   end
 end

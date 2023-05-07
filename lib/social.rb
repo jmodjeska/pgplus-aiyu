@@ -1,11 +1,12 @@
 class Social
   def initialize(profile)
     @profile = profile
-    @socials = {}
-    learn_socials
+    @socials = learn_socials
+    @overrides = YAML.load_file('config/overrides.yaml')
   end
 
   private def learn_socials
+    socs = {}
     soc_dir = CONFIG.dig('profiles', @profile, 'socials_dir')
     skipped = []
     begin
@@ -14,7 +15,7 @@ class Social
         next unless File.readlines("#{soc_dir}/#{f}")[2].match('4')
         soc = File.readlines("#{soc_dir}/#{f}")[6]
         begin
-          @socials[f] = Regexp.new(soc.gsub('{', '(').gsub('}', ')').strip)
+          socs[f] = Regexp.new(soc.gsub('{', '(').gsub('}', ')').strip)
         rescue
           skipped << "'#{f}'"
           next
@@ -25,8 +26,18 @@ class Social
       return nil
     end
     skipped = (skipped.length > 0) ? "[skipped: #{skipped.join(', ')}]" : ''
-    puts "-=> Learned #{@socials.length} socials #{skipped}"
-    return @socials
+    puts "-=> Learned #{socs.length} complex socials #{skipped}"
+    return socs
+  end
+
+  def get_override(str)
+    return false if str.nil?
+    @overrides.keys.each do |k|
+      if str.match?(/#{k}/i)
+        return @overrides[k]
+      end
+    end
+    return false
   end
 
   def parse(str)

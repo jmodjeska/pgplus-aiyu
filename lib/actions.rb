@@ -3,6 +3,16 @@ require_relative 'strings'
 module Actions
   include Strings
 
+  class TestReconnectSignal < StandardError; end
+
+  def configure_talker_settings(h)
+    toggle_pager(h, "unpaged")
+    muffle_clock(h)
+    h.send("see_gfx off")
+    h.send("main")
+    send_greeting(h)
+  end
+
   def process_callback(h, cmd, p, content)
     case cmd
     when :tell
@@ -50,13 +60,13 @@ module Actions
 
   def log_time
     t = Time.now
-    puts "-=> Time: #{t}".green if (t.min == 32) && (t.sec == 43)
+    log("-=> Time: #{t}", :info) if (t.min == 38) && (t.sec == 43)
   end
 
   def clear_log(h, log)
+    t = Time.now
     clear_log_interval = CONFIG.dig('timings', 'clear_log_interval')
-    if (Time.now.hour % clear_log_interval == 0) &&
-      (Time.now.min % 60 == 0) && (Time.now.sec == 13)
+    if (t.hour % clear_log_interval == 0) && (t.min == 0) && (t.sec == 13)
       File.truncate(log, 0)
     end
   end
@@ -87,6 +97,10 @@ module Actions
   def check_disclaimer(p)
     d_log = YAML.load_file(CONFIG.dig('disclaimer_log'))
     return d_log.dig(p)
+  end
+
+  def test_reconnect
+    raise TestReconnectSignal.new "Received Test Reconnect Signal"
   end
 
   def process_disclaimer(h, p, msg)

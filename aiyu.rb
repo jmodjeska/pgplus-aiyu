@@ -2,7 +2,6 @@ Dir[File.join(__dir__, 'lib', '*.rb')].each { |file| require file }
 require 'optimist'
 require 'yaml'
 include Actions
-include QueueMgr
 
 CONFIG = YAML.load_file('config/config.yaml')
 LOG = CONFIG.dig('log')
@@ -24,56 +23,68 @@ end
 ##################################################
 # MAIN LOOP
 
-def main_loop(h, s, profile, social)
+def main_loop(h, session, profile, social, q)
   shutdown_event = false
   sleep CONFIG.dig('timings', 'slowness_tolerance')
-  toggle_pager(h, "unpaged")
-  muffle_clock(h)
-  h.send("see_gfx off")
-  h.send("main")
-  send_greeting(h)
+  configure_talker_settings(h)
   until (shutdown_event) do
     log_time
     do_idle_command(h)
-    get_queue(h, profile, social).each do |queued|
-      p, content, callback = queued
-      if callback == :shutdown_event
+    clear_log(h, LOG)
+    q.build_queue.each do |qi|
+      p, callback, flags = qi[:p], qi[:callback], qi[:flags]
+      content = qi[:content]
+      if flags.include? :shutdown_event
         shutdown_event = true
-        next
+        break
+      elsif flags.include? :test_reconnect
+        test_reconnect
+        break
       end
-      next if (p.nil?) || (p.length < 2)
+      next if flags.include? :invalid_player
       if callback == :do_social
         process_callback(h, callback, p, content)
+      elsif flags.include? :override
+        process_callback(h, callback, p, qi[:override_response])
       elsif check_disclaimer(p)
-        history = s.get_history(p, callback)
+        history = session.get_history(p, callback)
         response = ChatGPT.new(content, history).get_response
         process_callback(h, callback, p, response)
-        s.add_to_history(p, [content, response], callback)
+        session.add_to_history(p, [content, response], callback)
       else
         process_disclaimer(h, p, content)
       end
     end
-    clear_log(h, LOG)
-    sleep 1
+    sleep 1 unless shutdown_event
   end
-  puts "-=> Detected shutdown event. Exiting.".magenta
+  log("Detected shutdown event. Exiting.", :error)
   h.send('wave')
   h.done
+rescue Net::ReadTimeout, Errno::ECONNRESET, TestReconnectSignal => e
+  if session.recons_available
+    log("Connection interrupted: #{e}. Forcing reconnect.", :warn)
+    h.done
+    session.log_recon
+    h = ConnectTelnet.new(profile)
+    q = Queues.new(h, profile, social)
+    main_loop(h, session, profile, social, q)
+  else
+    log("Max reconnects reached. Exiting.", :error)
+    h.done
+    exit
+  end
 end
 
 ##################################################
 # RUNTIME
 
-h = ConnectTelnet.new(profile)
-social = Social.new(profile)
-s = Sessions.new
-
 begin
-  main_loop(h, s, profile, social)
-rescue Net::ReadTimeout => e
-  puts "\n-=> Timed out waiting for talker response. Forcing reconnect.".red
-  h.done
   h = ConnectTelnet.new(profile)
-  main_loop(h, s, profile, social)
-  h.send("whistle")
+rescue Net::ReadTimeout
+  abort "-=> Timed out after initial connection (check prompt?)".red
 end
+
+social = Social.new(profile)
+session = Sessions.new
+q = Queues.new(h, profile, social)
+main_loop(h, session, profile, social, q)

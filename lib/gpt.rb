@@ -1,5 +1,6 @@
 require 'net/http'
 require 'json'
+require_relative 'strings'
 
 class ChatGPT
   def initialize(msg, history)
@@ -28,17 +29,15 @@ class ChatGPT
       request = Net::HTTP::Post.new(uri, headers)
       request.body = body.to_json
       response = http.request(request)
-      # process response
-      puts "DEBUG: #{response.body.to_s}"
+      log("DEBUG: #{response.body.to_s}", :info)
       resp = JSON.parse(response.body.force_encoding('UTF-8'))
       reply = resp.dig('choices', 0, 'message', 'content')
       finish_reason = resp.dig('choices', 0, 'finish_reason')
-      if finish_reason == "length"
-        reply += " ... [[[TRUNCATED]]]"
-      end
+      reply += " ... [[[TRUNCATED]]]" if finish_reason == "length"
       return reply.gsub(/\n+/, ' ')
+
     rescue StandardError => e
-      puts "DEBUG: Error: #{e}"
+      log("DEBUG: Error: #{e}", :error)
       if e.is_a?(Hash) && e.dig('error', 'message')
         if e.dig('error', 'message').start_with?("Rate limit")
           return "Sorry, I've exceeded my rate limit with ChatGPT. "\
