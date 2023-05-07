@@ -25,7 +25,7 @@ module Strings
         str[0] = ""
       elsif chunk[-1] != " "
         chunk_size -= chunk.length - chunk.rindex(" ") - 1
-        chunk = chunk.chunk(0, chunk.rindex(" ")).strip
+        chunk = chunk.slice(0, chunk.rindex(" ")).strip
       end
       chunks << chunk
     end
