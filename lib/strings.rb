@@ -52,7 +52,7 @@ module Strings
     if chunks[-1].match('[[[TRUNCATED]]]')
       chunks[-1].delete!('[[[TRUNCATED]]]')
       trunc_text = "Sorry, there was more, but I had to truncate it due "\
-        "to ecessive length."
+        "to excessive length."
       chunks << trunc_text
     end
     return chunks
