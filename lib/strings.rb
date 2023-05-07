@@ -70,19 +70,4 @@ module Strings
     end
     return msgs
   end
-
-  def parse_social(str)
-    do_social = {}
-    str.match(/^> (.*?) (.*?)$/)
-    ($1 && $2) ? ( p, used_soc = $1, $2 ) : ( return do_social )
-    known_socials =  {
-      'wave' => 'waves at you!',
-      'hug' => 'hug',
-      'lick' => 'licks you all over'
-    }
-    if known_socials.has_value?(used_soc)
-      do_social[:p], do_social[:soc] = p, known_socials.key(used_soc)
-    end
-    return do_social
-  end
 end

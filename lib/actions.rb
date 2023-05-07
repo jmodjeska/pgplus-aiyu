@@ -85,7 +85,7 @@ module Actions
   def clear_log(h, log)
     clear_log_interval = CONFIG.dig('timings', 'clear_log_interval')
     if (Time.now.hour % clear_log_interval == 0) &&
-      (Time.now.minute % 0 == 0) && (Time.now.sec % 13 == 0)
+      (Time.now.min % 60 == 0) && (Time.now.sec % 13 == 0)
       File.truncate(log, 0)
     end
   end

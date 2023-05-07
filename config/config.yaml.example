@@ -1,6 +1,7 @@
 log: 'logs/output.log'
 disclaimer: 'config/disclaimer.yaml'
 disclaimer_log: 'logs/disclaimer.log.yaml'
+learned_socials: 'config/socials.yaml'
 default_profile: 'test'
 
 profiles:
@@ -11,6 +12,7 @@ profiles:
         username: 'aiyu'
         password: 'hunter'
         prompt: 'PG\+\>'
+        socials_dir: '/Users/me/code/talker/files/socials'
 
     prod:
         talker_name: 'real-talker-name'
@@ -19,15 +21,16 @@ profiles:
         username: 'aiyu'
         password: 'hunter2'
         prompt: 'PG\+\>'
+        socials_dir: '/home/account/talker/files/socials'
 
 timings:
     idle_interval:       10 # mins
     clear_log_interval:  60 # mins
     queue_read_interval:  2 # secs
     session_duration:     2 # hours
-    max_requests:        50 # requests
     slowness_tolerance:   3 # seconds
     telnet_timeout:       3 # seconds
+    max_requests:        50 # requests
 
 triggers:
     direct_msgs: ["tells you", "asks of you", "exclaims to you"]

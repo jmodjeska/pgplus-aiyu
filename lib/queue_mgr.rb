@@ -3,7 +3,7 @@ require_relative 'strings'
 module QueueMgr
   include Strings
 
-  def get_queue(h, profile)
+  def get_queue(h, profile, socials)
     q_read_interval  = CONFIG.dig('timings',  'queue_read_interval')
     channel_prefixes = CONFIG.dig('triggers', 'channel_prefixes')
     channel_commands = CONFIG.dig('triggers', 'channel_commands')
@@ -29,7 +29,7 @@ module QueueMgr
               channel_commands[channel_prefixes.index(msgs[:loc])]]
           end
         else
-          social = parse_social(line)
+          social = socials.parse(line)
           unless social.empty?
             q << [social[:p], social[:soc], :do_social]
           end

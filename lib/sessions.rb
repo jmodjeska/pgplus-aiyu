@@ -7,6 +7,7 @@ require 'time'
 class Sessions
   def initialize
     @session, @history = {}, {}
+    puts "-=> Session initialized"
   end
 
   private def expired(p)

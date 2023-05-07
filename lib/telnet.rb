@@ -50,7 +50,7 @@ class ConnectTelnet
         puts "Talker login failed (password) for #{@username}"
       elsif system("grep 'already logged on here' #{LOG} > /dev/null") ||
         system("grep 'Last logged in' #{LOG} > /dev/null")
-        puts "Talker login successful for #{@username} "\
+        puts "-=> Talker login successful for #{@username} "\
           "(use `tail -f logs/output.log` to follow along live)"
       else
         puts "Talker login failed for #{@username} (see #{LOG})"
@@ -75,10 +75,9 @@ class ConnectTelnet
     sleep 0.1
     if system("grep 'Thank you for visiting' #{LOG} > /dev/null") ||
       system("grep 'Thanks for visiting' #{LOG} > /dev/null")
-      puts "-=> Talker logout successful for #{@username}"
+      puts "-=> Talker logout successful for #{@username}\n"
     else
-      puts "-=> Disconnected ungracefully."
+      puts "-=> Disconnected ungracefully.\n"
     end
-    puts "\n"
   end
 end
