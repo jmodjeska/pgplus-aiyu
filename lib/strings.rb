@@ -39,7 +39,7 @@ module Strings
         chunk.prepend(num)
         if chunk.match(/ (\d{1,2}\.)$/)
           num = "#{$1} "
-          chunks[i] = chunk[0...-(num.length+1)] unless chunks[i+1].nil?
+          chunks[i] = chunk[0...-(num.length)] unless chunks[i+1].nil?
         else
           num = ""
         end
