@@ -28,9 +28,14 @@ class ChatGPT
       request = Net::HTTP::Post.new(uri, headers)
       request.body = body.to_json
       response = http.request(request)
+      # process response
       puts "DEBUG: #{response.body.to_s}"
-      reply = JSON.parse(response.body.force_encoding('UTF-8'))
-        .dig('choices', 0, 'message', 'content')
+      resp = JSON.parse(response.body.force_encoding('UTF-8'))
+      reply = resp.dig('choices', 0, 'message', 'content')
+      finish_reason = resp.dig('choices', 0, 'finish_reason')
+      if finish_reason == "length"
+        reply += " ... [[[TRUNCATED]]]"
+      end
       return reply.gsub(/\n+/, ' ')
     rescue StandardError => e
       puts "DEBUG: Error: #{e}"

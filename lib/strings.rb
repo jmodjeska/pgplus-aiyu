@@ -45,6 +45,16 @@ module Strings
         end
       end
     end
+    handle_truncated_response(chunks)
+  end
+
+  def handle_truncated_response(chunks)
+    if chunks[-1].match('[[[TRUNCATED]]]')
+      chunks[-1].delete!('[[[TRUNCATED]]]')
+      trunc_text = "Sorry, there was more, but I had to truncate it due "\
+        "to ecessive length."
+      chunks << trunc_text
+    end
     return chunks
   end
 
