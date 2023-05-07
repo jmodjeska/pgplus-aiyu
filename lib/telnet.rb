@@ -66,7 +66,7 @@ class ConnectTelnet
     stack = ''
     @client.cmd(cmd) { |o| stack << o }
     if stack.force_encoding("ASCII-8BIT").match(/[\xff\xf9]/n)
-      stack = "-=> Invalid encoding detected. Skipping output.".yellow
+      stack = "-=> Invalid encoding detected. Skipping output.".magenta
     end
     return stack
   end
@@ -76,7 +76,7 @@ class ConnectTelnet
     sleep 0.1
     if system("grep 'Thank you for visiting' #{LOG} > /dev/null") ||
       system("grep 'Thanks for visiting' #{LOG} > /dev/null")
-      puts "-=> Talker logout successful for #{@username}\n".yellow
+      puts "-=> Talker logout successful for #{@username}\n".magenta
     else
       puts "-=> Disconnected ungracefully.\n".red
     end

@@ -35,6 +35,11 @@ module Actions
     return false
   end
 
+  def send_greeting(h)
+    c = ['bow', 'wave', 'hi5'].sample
+    h.send(c)
+  end
+
   def do_idle_command(h)
     idle_interval = CONFIG.dig('timings', 'idle_interval')
     if (Time.now.min % idle_interval == 0) && (Time.now.sec == 23)

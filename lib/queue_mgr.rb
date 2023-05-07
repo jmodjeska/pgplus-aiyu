@@ -19,7 +19,9 @@ module QueueMgr
         line = clean_ansi(line)
         puts line unless line == prompt.delete('\\')
         msgs = parse_message(line, profile)
-        if msgs.keys.length == 3
+        if line.match(/^\-\=\> Reboot in/)
+          q << [nil, nil, :shutdown_event]
+        elsif msgs.keys.length == 3
           case msgs[:loc]
           when :direct
             q << [msgs[:p], msgs[:msg], :tell]

@@ -31,11 +31,17 @@ def main_loop(h, s, profile, social)
   muffle_clock(h)
   h.send("see_gfx off")
   h.send("main")
+  send_greeting(h)
   until (shutdown_event) do
     log_time
     do_idle_command(h)
     get_queue(h, profile, social).each do |queued|
       p, content, callback = queued
+      if callback == :shutdown_event
+        shutdown_event = true
+        next
+      end
+      next if (p.nil?) || (p.length < 2)
       if callback == :do_social
         process_callback(h, callback, p, content)
       elsif check_disclaimer(p)
@@ -50,6 +56,9 @@ def main_loop(h, s, profile, social)
     clear_log(h, LOG)
     sleep 1
   end
+  puts "-=> Detected shutdown event. Exiting.".magenta
+  h.send('wave')
+  h.done
 end
 
 ##################################################
