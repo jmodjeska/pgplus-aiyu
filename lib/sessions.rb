@@ -7,7 +7,7 @@ require 'time'
 class Sessions
   def initialize
     @session, @history = {}, {}
-    puts "-=> Session initialized"
+    puts "-=> GPT session manager initialized"
   end
 
   private def expired(p)

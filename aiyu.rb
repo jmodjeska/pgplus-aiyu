@@ -24,15 +24,17 @@ end
 ##################################################
 # MAIN LOOP
 
-def main_loop(h, s, profile, socials)
+def main_loop(h, s, profile, social)
   shutdown_event = false
   sleep CONFIG.dig('timings', 'slowness_tolerance')
   toggle_pager(h, "unpaged")
   muffle_clock(h)
+  h.send("see_gfx off")
   h.send("main")
   until (shutdown_event) do
+    log_time
     do_idle_command(h)
-    get_queue(h, profile, socials).each do |queued|
+    get_queue(h, profile, social).each do |queued|
       p, content, callback = queued
       if callback == :do_social
         process_callback(h, callback, p, content)
@@ -54,15 +56,15 @@ end
 # RUNTIME
 
 h = ConnectTelnet.new(profile)
-socials = Socials.new(profile)
+social = Social.new(profile)
 s = Sessions.new
 
 begin
-  main_loop(h, s, profile, socials)
+  main_loop(h, s, profile, social)
 rescue Net::ReadTimeout => e
-  puts "\n-=> Timed out waiting for talker response. Forcing reconnect."
+  puts "\n-=> Timed out waiting for talker response. Forcing reconnect.".red
   h.done
   h = ConnectTelnet.new(profile)
-  main_loop(h, s, profile, socials)
+  main_loop(h, s, profile, social)
   h.send("whistle")
 end

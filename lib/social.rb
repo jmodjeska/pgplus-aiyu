@@ -1,4 +1,4 @@
-class Socials
+class Social
   def initialize(profile)
     @profile = profile
     @socials = {}
@@ -32,11 +32,13 @@ class Socials
   def parse(str)
     do_social = {}
     str.match(/^> (.*?) (.*?)$/)
-    ($1 && $2) ? (p, used_soc = $1, $2) : (return do_social)
-    @socials.each do |k, v|
-      if used_soc.match(v)
-        do_social[:p], do_social[:soc] = p, @socials.keys.sample
-        break
+    if ($1 && $2)
+      p, used_soc = $1, $2
+      @socials.each do |k, v|
+        if used_soc.match(v)
+          do_social[:p], do_social[:soc] = p, @socials.keys.sample
+          break
+        end
       end
     end
     return do_social

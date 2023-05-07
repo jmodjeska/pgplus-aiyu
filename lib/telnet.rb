@@ -1,4 +1,5 @@
 require 'net-telnet'
+require_relative 'strings'
 
 private def cfg(profile, key)
   return CONFIG.dig('profiles', profile, key)
@@ -31,15 +32,15 @@ class ConnectTelnet
         "Debug_Output" => true
       )
     rescue Errno::EHOSTUNREACH, Net::OpenTimeout => e
-      abort "Can't reach #{@ip} at port #{@port}\n"
+      abort "Can't reach #{@ip} at port #{@port}\n".red
     rescue Errno::ECONNREFUSED => e
-      abort "Connection refused to #{@ip} at port #{@port}.\n"
+      abort "Connection refused to #{@ip} at port #{@port}.\n".red
     end
 
     # Validate connection
     result = IO.readlines(LOG)[1].chomp!
     unless result == "Connected to #{@ip}."
-      abort "Talker connection failed (result: #{result})"
+      abort "Talker connection failed (result: #{result})".red
     end
 
     # Login + validation
@@ -47,13 +48,13 @@ class ConnectTelnet
     fork do
       sleep CONFIG.dig('timings', 'slowness_tolerance')
       if system("grep 'try again!' #{LOG} > /dev/null")
-        puts "Talker login failed (password) for #{@username}"
+        puts "Talker login failed (password) for #{@username}".red
       elsif system("grep 'already logged on here' #{LOG} > /dev/null") ||
         system("grep 'Last logged in' #{LOG} > /dev/null")
         puts "-=> Talker login successful for #{@username} "\
-          "(use `tail -f logs/output.log` to follow along live)"
+          "(use `tail -f logs/output.log` to follow along live)\n".green
       else
-        puts "Talker login failed for #{@username} (see #{LOG})"
+        puts "Talker login failed for #{@username} (see #{LOG})".red
       end
     end
     client.cmd(cfg(@profile, 'password'))
@@ -65,7 +66,7 @@ class ConnectTelnet
     stack = ''
     @client.cmd(cmd) { |o| stack << o }
     if stack.force_encoding("ASCII-8BIT").match(/[\xff\xf9]/n)
-      stack = "-=> Invalid encoding detected. Skipping output."
+      stack = "-=> Invalid encoding detected. Skipping output.".yellow
     end
     return stack
   end
@@ -75,9 +76,9 @@ class ConnectTelnet
     sleep 0.1
     if system("grep 'Thank you for visiting' #{LOG} > /dev/null") ||
       system("grep 'Thanks for visiting' #{LOG} > /dev/null")
-      puts "-=> Talker logout successful for #{@username}\n"
+      puts "-=> Talker logout successful for #{@username}\n".yellow
     else
-      puts "-=> Disconnected ungracefully.\n"
+      puts "-=> Disconnected ungracefully.\n".red
     end
   end
 end

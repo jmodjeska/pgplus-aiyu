@@ -3,10 +3,11 @@ require_relative 'strings'
 module QueueMgr
   include Strings
 
-  def get_queue(h, profile, socials)
+  def get_queue(h, profile, social)
     q_read_interval  = CONFIG.dig('timings',  'queue_read_interval')
     channel_prefixes = CONFIG.dig('triggers', 'channel_prefixes')
     channel_commands = CONFIG.dig('triggers', 'channel_commands')
+    prompt = CONFIG.dig('profiles', profile, 'prompt')
     q = []
     if (Time.now.sec % q_read_interval == 0)
       o = h.send('').split(/\r\n\e/)
@@ -16,7 +17,7 @@ module QueueMgr
       end
       o.each do |line|
         line = clean_ansi(line)
-        puts line
+        puts line unless line == prompt.delete('\\')
         msgs = parse_message(line, profile)
         if msgs.keys.length == 3
           case msgs[:loc]
@@ -29,10 +30,8 @@ module QueueMgr
               channel_commands[channel_prefixes.index(msgs[:loc])]]
           end
         else
-          social = socials.parse(line)
-          unless social.empty?
-            q << [social[:p], social[:soc], :do_social]
-          end
+          s = social.parse(line)
+          q << [s[:p], s[:soc], :do_social] unless s.empty?
         end
       end
     end

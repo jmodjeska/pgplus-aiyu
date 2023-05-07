@@ -37,9 +37,22 @@ module Actions
 
   def do_idle_command(h)
     idle_interval = CONFIG.dig('timings', 'idle_interval')
-    if (Time.now.min % idle_interval == 0) && (Time.now.sec % 23 == 0)
+    if (Time.now.min % idle_interval == 0) && (Time.now.sec == 23)
       c = ['main', 'idle', 'look'].sample
       h.send(c)
+    end
+  end
+
+  def log_time
+    t = Time.now
+    puts "-=> Time: #{t}".green if (t.min == 32) && (t.sec == 43)
+  end
+
+  def clear_log(h, log)
+    clear_log_interval = CONFIG.dig('timings', 'clear_log_interval')
+    if (Time.now.hour % clear_log_interval == 0) &&
+      (Time.now.min % 60 == 0) && (Time.now.sec == 13)
+      File.truncate(log, 0)
     end
   end
 
@@ -79,14 +92,6 @@ module Actions
       d.dig('STAGE 2').each { |k, v| tell(h, p, v.gsub(/\s+/, ' ')) }
     else
       d.dig('STAGE 1').each { |k, v| tell(h, p, v.gsub(/\s+/, ' ')) }
-    end
-  end
-
-  def clear_log(h, log)
-    clear_log_interval = CONFIG.dig('timings', 'clear_log_interval')
-    if (Time.now.hour % clear_log_interval == 0) &&
-      (Time.now.min % 60 == 0) && (Time.now.sec % 13 == 0)
-      File.truncate(log, 0)
     end
   end
 end
