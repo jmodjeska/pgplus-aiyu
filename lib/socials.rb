@@ -35,7 +35,7 @@ class Socials
     ($1 && $2) ? (p, used_soc = $1, $2) : (return do_social)
     @socials.each do |k, v|
       if used_soc.match(v)
-        do_social[:p], do_social[:soc] = p, k
+        do_social[:p], do_social[:soc] = p, @socials.keys.sample
         break
       end
     end
