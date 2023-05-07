@@ -64,6 +64,9 @@ class ConnectTelnet
   def send(cmd)
     stack = ''
     @client.cmd(cmd) { |o| stack << o }
+    if stack.force_encoding("ASCII-8BIT").match(/[\xff\xf9]/n)
+      stack = "-=> Invalid encoding detected. Skipping output."
+    end
     return stack
   end
 

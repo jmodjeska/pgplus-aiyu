@@ -30,14 +30,16 @@ def main_loop(h, s, profile)
   until (shutdown_event) do
     do_idle_command(h)
     get_queue(h, profile).each do |queued|
-      p, msg, callback = queued
-      if check_disclaimer(p)
+      p, content, callback = queued
+      if callback == :do_social
+        process_callback(h, callback, p, content)
+      elsif check_disclaimer(p)
         history = s.get_history(p, callback)
-        response = ChatGPT.new(msg, history).get_response
+        response = ChatGPT.new(content, history).get_response
         process_callback(h, callback, p, response)
-        s.add_to_history(p, [msg, response], callback)
+        s.add_to_history(p, [content, response], callback)
       else
-        process_disclaimer(h, p, msg)
+        process_disclaimer(h, p, content)
       end
     end
     clear_log(h, LOG)
@@ -58,5 +60,6 @@ begin
   main_loop(h, s, profile)
 rescue Net::ReadTimeout => e
   puts "\n-=> Timed out waiting for talker response."
+
   h.done
 end

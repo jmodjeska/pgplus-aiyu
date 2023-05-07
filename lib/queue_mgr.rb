@@ -10,14 +10,14 @@ module QueueMgr
     q = []
     if (Time.now.sec % q_read_interval == 0)
       o = h.send('').split(/\r\n\e/)
+      unless o.map(&:valid_encoding?)
+        puts "-=> Invalid encoding detected. Resetting queue."
+        return q
+      end
       o.each do |line|
         line = clean_ansi(line)
         puts line
-        unless line.valid_encoding?
-          puts "-=> Invalid encoding detected. Skipping."
-          next
-        end
-        msgs = parse_messages(line, profile)
+        msgs = parse_message(line, profile)
         if msgs.keys.length == 3
           case msgs[:loc]
           when :direct
@@ -27,6 +27,11 @@ module QueueMgr
           else #channel
             q << [msgs[:p], msgs[:msg],
               channel_commands[channel_prefixes.index(msgs[:loc])]]
+          end
+        else
+          social = parse_social(line)
+          unless social.empty?
+            q << [social[:p], social[:soc], :do_social]
           end
         end
       end

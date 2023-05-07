@@ -3,14 +3,16 @@ require_relative 'strings'
 module Actions
   include Strings
 
-  def process_callback(h, cmd, p, msg)
+  def process_callback(h, cmd, p, content)
     case cmd
     when :tell
-      tell(h, p, msg)
+      tell(h, p, content)
     when :say
-      say_to_room_or_channel(h, p, msg, 'say')
+      say_to_room_or_channel(h, p, content, 'say')
     when *CONFIG.dig('triggers', 'channel_commands')
-      say_to_room_or_channel(h, p, msg, cmd)
+      say_to_room_or_channel(h, p, content, cmd)
+    when :do_social
+      h.send("#{content} #{p}")
     else
       puts "Undefined callback command: #{cmd}"
     end
@@ -71,24 +73,19 @@ module Actions
 
   def process_disclaimer(h, p, msg)
     d_log = CONFIG.dig('disclaimer_log')
-    disclaimer = YAML.load_file(CONFIG.dig('disclaimer'))
+    d = YAML.load_file(CONFIG.dig('disclaimer'))
     if (msg.downcase == "i agree")
       File.write(d_log, "#{p}: '#{Time.now.to_s}'\n", mode: 'a+')
-      disclaimer.dig('STAGE 2').each do |k, v|
-        puts v
-        tell(h, p, v.gsub(/\s+/, ' '))
-      end
+      d.dig('STAGE 2').each { |k, v| tell(h, p, v.gsub(/\s+/, ' ')) }
     else
-      disclaimer.dig('STAGE 1').each do |k, v|
-        puts v
-        tell(h, p, v.gsub(/\s+/, ' '))
-      end
+      d.dig('STAGE 1').each { |k, v| tell(h, p, v.gsub(/\s+/, ' ')) }
     end
   end
 
   def clear_log(h, log)
     clear_log_interval = CONFIG.dig('timings', 'clear_log_interval')
-    if (Time.now.min % clear_log_interval == 0) && (Time.now.sec % 13 == 0)
+    if (Time.now.hour % clear_log_interval == 0) &&
+      (Time.now.minute % 0 == 0) && (Time.now.sec % 13 == 0)
       File.truncate(log, 0)
     end
   end
