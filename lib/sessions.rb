@@ -79,7 +79,7 @@ class Sessions
       name = CONFIG.dig('ai_name')
       seed_msgset = [{
         "role": "system",
-        "content": "You are a helpful, funny, friendly assistant who "\
+        "content": "You are a funny and friendly assistant who "\
         "has assumed the name #{name}."
       }]
       @history[hist] = seed_msgset

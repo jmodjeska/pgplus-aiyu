@@ -13,7 +13,7 @@ class ConnectTelnet
     @port = cfg(@profile, 'port')
     @name = cfg(@profile, 'talker_name')
     @prompt = cfg(@profile, 'prompt')
-    puts "\n\n-=> Connecting to: #{@name}"
+    puts "-=> Connecting to: #{@name}"
     @client = new_client
   end
 

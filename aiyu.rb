@@ -3,6 +3,7 @@ require 'optimist'
 require 'yaml'
 include Actions
 include Admin
+include SystemOps
 
 CONFIG = YAML.load_file('config/config.yaml')
 LOG = CONFIG.dig('log')
@@ -79,6 +80,9 @@ end
 
 ##################################################
 # RUNTIME
+
+puts "\n"
+abort "-=> Couldn't terminate existing process #{pid}".red if process_conflict
 
 begin
   h = ConnectTelnet.new(profile)
