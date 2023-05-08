@@ -43,7 +43,7 @@ Install dependencies
 
 ### On the talker ...
 
-1. Setup the `aiyu` character (you can name it whatever you want) as a regular resident, with a password, title, description, etc. At this time I do not recommend granting it the `robot` priv, but I'll work on enabling that in a future update.
+1. Setup the `aiyu` character (you can name it whatever you want) as a regular resident, with a password, title, description, etc. See notes below on whether to grant it the `robot` priv or not.
 
 ### In aiyu/config.yaml ...
 
