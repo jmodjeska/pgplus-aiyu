@@ -25,8 +25,7 @@ module Admin
       when 'get temperature'
         h.send(".#{p} Temperature is currently #{session.temperature}")
       when /^set temperature ([+-]?([0-9]*[.])?[0-9]+)$/
-        temperature = session.set_temperature($1)
-        h.send(".#{p} Temperature is now #{session.temperature}")
+        h.send(".#{p} Temperature is now #{session.set_temperature($1)}")
       else
         h.send(".#{p} Sorry, I don't know how to do '#{callback}'.")
       end

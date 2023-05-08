@@ -76,6 +76,4 @@ class Sessions
     end
     return @history[h]
   end
-
-
 end

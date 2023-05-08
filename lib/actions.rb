@@ -10,6 +10,7 @@ module Actions
     muffle_clock(h)
     h.send("see_gfx off")
     h.send("desc ^Y.*^N ChatGPT-connected AI bot v#{VERSION} ^R<3^N ^P^^_^^^N")
+    h.send("url https://github.com/jmodjeska/pgplus-aiyu")
     h.send("main")
     send_greeting(h)
   end
