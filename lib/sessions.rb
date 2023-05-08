@@ -5,9 +5,12 @@ require 'time'
 # shared group session.
 
 class Sessions
+  attr_accessor :temperature
+
   def initialize
     @session, @history = {}, {}
     @recons = []
+    @temperature = CONFIG.dig('temperature')
     puts "-=> Session manager initialized"
   end
 
@@ -27,6 +30,10 @@ class Sessions
       {"role": "user", "content": o},
       {"role": "assistant", "content": i}
     ]
+  end
+
+  def set_temperature(temp)
+    @temperature = temp.to_f
   end
 
   def recons_available

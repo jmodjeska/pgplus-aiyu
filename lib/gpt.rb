@@ -3,9 +3,10 @@ require 'json'
 require_relative 'strings'
 
 class ChatGPT
-  def initialize(msg, history)
+  def initialize(msg, history, temperature)
     @msg = msg.force_encoding('UTF-8')
     @history = history.dup
+    @temperature = temperature
   end
 
   def get_response
@@ -19,7 +20,7 @@ class ChatGPT
     body = {
       'model': 'gpt-3.5-turbo',
       'messages': @history,
-      'temperature': 0.8,
+      'temperature': @temperature,
       'max_tokens': 250
     }
 

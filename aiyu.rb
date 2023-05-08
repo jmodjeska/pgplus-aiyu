@@ -39,7 +39,7 @@ def main_loop(h, session, profile, social, q)
         shutdown_event = true
         break
       elsif flags.include? :admin_command
-        admin_do_cmd(h, callback, p)
+        admin_do_cmd(h, callback, p, session)
         break
       end
       next if flags.include? :invalid_player
@@ -48,8 +48,9 @@ def main_loop(h, session, profile, social, q)
       elsif flags.include? :override
         process_callback(h, callback, p, qi[:override_response])
       elsif check_disclaimer(p)
+        temp = session.temperature
         history = session.get_history(p, callback)
-        response = ChatGPT.new(content, history).get_response
+        response = ChatGPT.new(content, history, temp).get_response
         process_callback(h, callback, p, response)
         session.add_to_history(p, [content, response], callback)
       else
