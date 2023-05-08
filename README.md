@@ -30,6 +30,10 @@ Aiyu (爱语) is a ChatGPT-powered, Ruby chatbot designed to interact, as a stan
     and terror.'
 ````
 
+## Live Demo
+
+Aiyu is (probably) running on [UberWorld](https://uberworld.org). You can connect at telnet://uberworld.org 2020.
+
 ## You Will Need
 
 1. A working [PG+ talker](https://github.com/talkers/pgplus)
