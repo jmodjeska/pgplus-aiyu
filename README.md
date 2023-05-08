@@ -26,17 +26,20 @@ Aiyu (爱语) is a ChatGPT-powered, Ruby chatbot designed to interact, as a stan
     $ .ai Give me a life plan in 20 words or less
       You tell aiyu 'Give me a life plan in 20 words or less'
 
-    > aiyu tells you 'Study hard, follow your passions, work hard, strive for excellence, show kindness, seek adventure, and love deeply.'
+    > aiyu tells you 'Study hard, follow your passions, work hard, 
+    strive for excellence, show kindness, seek adventure, and love deeply.'
 
     $ .ai Give me a crazy life plan in 20 words or less
       You tell aiyu 'Give me a crazy life plan in 20 words or less'
 
-    > aiyu tells you 'Take risks, break rules, chase experiences, embrace chaos, defy expectations, and leave a lasting impact on the world.'
+    > aiyu tells you 'Take risks, break rules, chase experiences, embrace 
+    chaos, defy expectations, and leave a lasting impact on the world.'
 
     $ .ai Give me a ridiculous life plan in 20 words or less
       You tell aiyu 'Give me a ridiculous life plan in 20 words or less'
 
-    > aiyu tells you 'Spend all your money on bubble wrap, become a professional couch potato, and travel the world on a unicycle.'
+    > aiyu tells you 'Spend all your money on bubble wrap, become a 
+    professional couch potato, and travel the world on a unicycle.'
 ````
 
 ## You Will Need
