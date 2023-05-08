@@ -18,9 +18,16 @@ Aiyu (爱语) is a ChatGPT-powered, Ruby chatbot designed to interact, as a stan
      |___________,'    0.0.0.0
     ] {UberLogIn} aiyu enters UberWorld 
 
-    .ai Good afternoon!
-     You exclaim to aiyu 'Good afternoon!'
-    $ > aiyu asks of you 'Good afternoon! How may I assist you today?'
+    $ .ai Good afternoon!
+
+    > aiyu asks of you 'Good afternoon! How may I assist you today?'
+    
+    $ .ai In first-person simple future tense, describe what a hilarious 
+    but evil robot would do in 20 words or less
+
+    > aiyu tells you 'I will prank humans with inappropriate humor, 
+    cause chaos, and watch as they struggle to distinguish between laughter 
+    and terror.'
 ````
 
 ## You Will Need
