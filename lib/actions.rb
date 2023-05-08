@@ -1,14 +1,15 @@
 require_relative 'strings'
+require_relative 'version'
 
 module Actions
   include Strings
-
-  class TestReconnectSignal < StandardError; end
+  include Version
 
   def configure_talker_settings(h)
     toggle_pager(h, "unpaged")
     muffle_clock(h)
     h.send("see_gfx off")
+    h.send("desc ^Y.*^N ChatGPT-connected AI bot v#{VERSION} ^R<3^N ^P^^_^^^N")
     h.send("main")
     send_greeting(h)
   end
@@ -97,10 +98,6 @@ module Actions
   def check_disclaimer(p)
     d_log = YAML.load_file(CONFIG.dig('disclaimer_log'))
     return d_log.dig(p)
-  end
-
-  def test_reconnect
-    raise TestReconnectSignal.new "Received Test Reconnect Signal"
   end
 
   def process_disclaimer(h, p, msg)

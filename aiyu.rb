@@ -2,6 +2,7 @@ Dir[File.join(__dir__, 'lib', '*.rb')].each { |file| require file }
 require 'optimist'
 require 'yaml'
 include Actions
+include Admin
 
 CONFIG = YAML.load_file('config/config.yaml')
 LOG = CONFIG.dig('log')
@@ -37,8 +38,8 @@ def main_loop(h, session, profile, social, q)
       if flags.include? :shutdown_event
         shutdown_event = true
         break
-      elsif flags.include? :test_reconnect
-        test_reconnect
+      elsif flags.include? :admin_command
+        admin_do_cmd(h, callback, p)
         break
       end
       next if flags.include? :invalid_player
