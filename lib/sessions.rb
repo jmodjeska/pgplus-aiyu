@@ -55,25 +55,36 @@ class Sessions
   end
 
   def get_history(p, command)
-    h = (command == :tell) ? p : command
-    if ( (@session.key?(h)) && !(expired(h)) && (@history.key?(h)) )
-      @session[h] = Time.now
-      return @history[h]
-    elsif @session.key?(h)
-      @session.delete(h)
-      @history.delete(h)
+    hist = (command == :tell) ? p : command
+    if ( (@session.key?(hist)) && !(expired(hist)) && (@history.key?(hist)) )
+      @session[hist] = Time.now
+      return @history[hist]
+    elsif @session.key?(hist)
+      @session.delete(hist)
+      @history.delete(hist)
     end
-    @session[h] = Time.now
+    @session[hist] = Time.now
     return []
   end
 
+  def read_history(str)
+    @history[str]
+  end
+
   def add_to_history(p, msgset, command)
-    h = (command == :tell) ? p : command
-    if @history.key?(h)
-      @history[h].concat encode_msgset(msgset)
+    hist = (command == :tell) ? p : command
+    if @history.key?(hist)
+      @history[hist].concat encode_msgset(msgset)
     else
-      @history[h] = encode_msgset(msgset)
+      name = CONFIG.dig('ai_name')
+      seed_msgset = [{
+        "role": "system",
+        "content": "You are a helpful, funny, friendly assistant who "\
+        "has assumed the name #{name}."
+      }]
+      @history[hist] = seed_msgset
+      @history[hist].concat encode_msgset(msgset)
     end
-    return @history[h]
+    return @history[hist]
   end
 end

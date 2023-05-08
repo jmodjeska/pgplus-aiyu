@@ -3,6 +3,7 @@ disclaimer: 'config/disclaimer.yaml'
 disclaimer_log: 'logs/disclaimer.log.yaml'
 default_profile: 'test'
 admin_access: 'raindog'
+ai_name: 'aiyu
 
 profiles:
   test:
