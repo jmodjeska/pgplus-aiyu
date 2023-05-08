@@ -1,6 +1,6 @@
 require 'time'
 
-# Note: session history (h) follows a player in the case of a direct
+# Note: session history follows a player in the case of a direct
 # msg (tell); else it treats the main room or specified channel as a
 # shared group session.
 

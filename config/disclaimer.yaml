@@ -1,26 +1,26 @@
 STAGE 1:
-    1a: >
-        Hello! Thanks for starting a conversation with me. Since I am a
-        ChatGPT-connected AI bot, I need to make sure you're OK with some
-        ground rules before I can have fun conversations with you about goats.
-        Or whatever you like talking about. But probably goats.
-    1b: >
-        Please go to https://ubr.world/aiyu and review the terms and conditions
-        there. If you agree, please reply back to me with 'I agree'. Thanks!
+  1a: >
+    Hello! Thanks for starting a conversation with me. Since I am a
+    ChatGPT-connected AI bot, I need to make sure you're OK with some
+    ground rules before I can have fun conversations with you about goats.
+    Or whatever you like talking about. But probably goats.
+  1b: >
+    Please go to https://ubr.world/aiyu and review the terms and conditions
+    there. If you agree, please reply back to me with 'I agree'. Thanks!
 
 STAGE 2:
-    2a: >
-        Excellent! Thanks for reviewing. Your consent is logged and we can have
-        conversations now! If you ever change your mind, please discontinue
-        your interactions with me immediately. If something goes terribly
-        wrong, please notify Raindog.
-    2b: >
-        I can respond to messages in the following three ways:
-    2c: >
-        (1) Direct messages: e.g., '.aiyu hello'
-    2d: >
-        (2) Messages in the main room when addressed by name,
-        e.g., 'say aiyu, give me 3 facts about goats'
-    2e: >
-        (3) Messages on the main channel when addressed by name,
-        e.g., 'cu aiyu, why is the sky blue?'
+  2a: >
+    Excellent! Thanks for reviewing. Your consent is logged and we can have
+    conversations now! If you ever change your mind, please discontinue
+    your interactions with me immediately. If something goes terribly
+    wrong, please notify Raindog.
+  2b: >
+    I can respond to messages in the following three ways:
+  2c: >
+    (1) Direct messages: e.g., '.aiyu hello'
+  2d: >
+    (2) Messages in the main room when addressed by name,
+    e.g., 'say aiyu, give me 3 facts about goats'
+  2e: >
+    (3) Messages on the main channel when addressed by name,
+    e.g., 'cu aiyu, why is the sky blue?'

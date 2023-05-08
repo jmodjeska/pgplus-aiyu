@@ -5,36 +5,36 @@ default_profile: 'test'
 admin_access: 'raindog'
 
 profiles:
-    test:
-        talker_name: 'talker_name'
-        ip: '0.0.0.0'
-        port: '2020'
-        username: 'aiyu'
-        password: 'hunter'
-        prompt: 'PG\+\>'
-        socials_dir: '/Users/me/code/talker/files/socials'
+  test:
+    talker_name: 'talker_name'
+    ip: '0.0.0.0'
+    port: '2020'
+    username: 'aiyu'
+    password: 'hunter'
+    prompt: 'PG\+\>'
+    socials_dir: '/Users/me/code/talker/files/socials'
 
-    prod:
-        talker_name: 'real-talker-name'
-        ip: '999.999.999.999'
-        port: '2020'
-        username: 'aiyu'
-        password: 'hunter2'
-        prompt: 'PG\+\>'
-        socials_dir: '/home/account/talker/files/socials'
+  prod:
+    talker_name: 'real-talker-name'
+    ip: '999.999.999.999'
+    port: '2020'
+    username: 'aiyu'
+    password: 'hunter2'
+    prompt: 'PG\+\>'
+    socials_dir: '/home/account/talker/files/socials'
 
 timings:
-    idle_interval:       10 # mins
-    clear_log_interval:  60 # mins
-    queue_read_interval:  2 # secs
-    session_duration:     2 # hours
-    slowness_tolerance:   3 # seconds
-    telnet_timeout:       3 # seconds
-    max_requests:        50 # requests
-    max_reconnects:       1 # per hour
+  idle_interval:       10 # mins
+  clear_log_interval:  60 # mins
+  queue_read_interval:  2 # secs
+  session_duration:     2 # hours
+  slowness_tolerance:   3 # seconds
+  telnet_timeout:       3 # seconds
+  max_requests:        50 # requests
+  max_reconnects:       1 # per hour
 
 triggers:
-    direct_msgs: ["tells you", "asks of you", "exclaims to you"]
-    room_msgs: ["says", "asks", "exclaims"]
-    channel_prefixes: ["(UberChannel)", "[UberSpod]"]
-    channel_commands: ['cu', "pu"]
+  direct_msgs: ["tells you", "asks of you", "exclaims to you"]
+  room_msgs: ["says", "asks", "exclaims"]
+  channel_prefixes: ["(UberChannel)", "[UberSpod]"]
+  channel_commands: ['cu', "pu"]
