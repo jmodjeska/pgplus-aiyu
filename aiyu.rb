@@ -59,6 +59,7 @@ def main_loop(h, session, profile, social, q)
       end
     end
     sleep 1 unless shutdown_event
+    h.write("\xff\xfc\xf9")
   end
   log("Detected shutdown event. Exiting.", :error)
   h.send('wave')

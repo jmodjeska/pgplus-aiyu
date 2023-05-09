@@ -29,7 +29,8 @@ class ConnectTelnet
         "Timeout" => CONFIG.dig('timings', 'telnet_timeout'),
         "Output_log" => LOG,
         "Dump_Log" => true,
-        "Debug_Output" => true
+        "Debug_Output" => true,
+        'Preference' => {'WILL' => [24, 25, 31]}
       )
     rescue Errno::EHOSTUNREACH, Net::OpenTimeout => e
       abort "Can't reach #{@ip} at port #{@port}\n".red
@@ -69,6 +70,10 @@ class ConnectTelnet
       stack = "-=> Invalid encoding detected. Skipping output.".magenta
     end
     return stack
+  end
+
+  def write(cmd)
+    @client.write(cmd)
   end
 
   def done
