@@ -3,12 +3,15 @@ CONFIG_FILE         = 'config/config.yaml'
 LOG                 = 'logs/output.log'
 DISCLAIMER          = 'config/disclaimer.yaml'
 DISCLAIMER_LOG      = 'logs/disclaimer.log.yaml'
-DEFAULT_TEMPERATURE = 1.0
 
 # Telnet Commands
 IAC  = "\xff"
 WONT = "\xfc"
 GA   = "\xf9"
+
+#GPT Config
+DEFAULT_TEMPERATURE = 1.0
+GPT_MAX_TOKENS      = 250
 
 # Timings
 SLOWNESS_TOLERANCE  =    3 # seconds

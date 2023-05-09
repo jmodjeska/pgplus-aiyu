@@ -21,7 +21,7 @@ class ChatGPT
       'model': 'gpt-3.5-turbo',
       'messages': @history,
       'temperature': @temperature,
-      'max_tokens': 250
+      'max_tokens': GPT_MAX_TOKENS
     }
 
     begin
