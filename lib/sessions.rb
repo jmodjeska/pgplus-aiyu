@@ -10,13 +10,12 @@ class Sessions
   def initialize
     @session, @history = {}, {}
     @recons = []
-    @temperature = CONFIG.dig('temperature')
+    @temperature = DEFAULT_TEMPERATURE
     puts "-=> Session manager initialized"
   end
 
   private def expired(p)
-    session_duration = CONFIG.dig('timings', 'session_duration')
-    return (@session[p] + 3600 * session_duration) < Time.now
+    return (@session[p] + ONE_HOUR * SESSION_DURATION) < Time.now
   end
 
   private def encode_msgset(msgset)
@@ -38,12 +37,12 @@ class Sessions
 
   def recons_available
     return true if @recons.empty?
-    max_reconnects = CONFIG.dig('timings', 'max_reconnects')
+
     last_recon = @recons.max
-    if (Time.now - last_recon) > 3600
+    if (Time.now - last_recon) > ONE_HOUR
       @recons = []
       return true
-    elsif @recons.count { |r| (Time.now - r) < 3600 } < max_reconnects
+    elsif @recons.count { |r| (Time.now - r) < ONE_HOUR } < MAX_RECONNECTS
       return true
     else
       return false
@@ -76,11 +75,10 @@ class Sessions
     if @history.key?(hist)
       @history[hist].concat encode_msgset(msgset)
     else
-      name = CONFIG.dig('ai_name')
       seed_msgset = [{
         "role": "system",
         "content": "You are a funny and friendly assistant who "\
-        "has assumed the name #{name}."
+        "has assumed the name #{AI_NAME}."
       }]
       @history[hist] = seed_msgset
       @history[hist].concat encode_msgset(msgset)

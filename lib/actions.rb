@@ -21,7 +21,7 @@ module Actions
       tell(h, p, content)
     when :say
       say_to_room_or_channel(h, p, content, 'say')
-    when *CONFIG.dig('triggers', 'channel_commands')
+    when *CHANNEL_COMMANDS
       say_to_room_or_channel(h, p, content, cmd)
     when :do_social
       h.send("#{content} #{p}")
@@ -53,8 +53,7 @@ module Actions
   end
 
   def do_idle_command(h)
-    idle_interval = CONFIG.dig('timings', 'idle_interval')
-    if (Time.now.min % idle_interval == 0) && (Time.now.sec == 23)
+    if (Time.now.min % IDLE_INTERVAL == 0) && (Time.now.sec == 23)
       c = ['main', 'idle', 'look'].sample
       h.send(c)
     end
@@ -67,8 +66,7 @@ module Actions
 
   def clear_log(h, log)
     t = Time.now
-    clear_log_interval = CONFIG.dig('timings', 'clear_log_interval')
-    if (t.hour % clear_log_interval == 0) && (t.min == 0) && (t.sec == 13)
+    if (t.hour % CLEAR_LOG_INTERVAL == 0) && (t.min == 0) && (t.sec == 13)
       File.truncate(log, 0)
     end
   end
@@ -97,13 +95,13 @@ module Actions
   end
 
   def check_disclaimer(p)
-    d_log = YAML.load_file(CONFIG.dig('disclaimer_log'))
+    d_log = YAML.load_file(DISCLAIMER_LOG)
     return d_log.dig(p)
   end
 
   def process_disclaimer(h, p, msg)
-    d_log = CONFIG.dig('disclaimer_log')
-    d = YAML.load_file(CONFIG.dig('disclaimer'))
+    d_log = DISCLAIMER_LOG
+    d = YAML.load_file(DISCLAIMER)
     if (msg.downcase == "i agree")
       File.write(d_log, "#{p}: '#{Time.now.to_s}'\n", mode: 'a+')
       d.dig('STAGE 2').each { |k, v| tell(h, p, v.gsub(/\s+/, ' ')) }

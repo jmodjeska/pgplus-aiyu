@@ -1,4 +1,7 @@
+require_relative 'actions'
+
 module Admin
+include Actions
 
   class TestReconnectSignal < StandardError; end
 
@@ -7,21 +10,29 @@ module Admin
   end
 
   def get_consents
-    return YAML.load_file(CONFIG.dig('disclaimer_log')).keys
+    return YAML.load_file(DISCLAIMER_LOG).keys
   end
 
   def admin_do_cmd(h, callback, p, session)
-    a = CONFIG.dig('admin_access')
-    if p != a
-      h.send(".#{a} #{p} just tried to execute #{callback}")
+    if p != ADMIN_NAME
+      h.send(".#{ADMIN_NAME} #{p} just tried to execute #{callback}")
       return false
     else
+      available_admin_commands = [
+        'reconnect', 'list consents', 'get temperature',
+        'set temperature <new temperature>',
+        'session for <name or channel>', 'help'
+      ]
       case callback
-      when 'reconnect' then test_reconnect
+      when 'help'
+        h.send(".#{p} I can do the following admin commands:")
+        tell(h, p, available_admin_commands.join(', '))
+      when 'reconnect'
+        test_reconnect
       when 'list consents'
         get_consents
         h.send(".#{p} The following people have consented to interact:")
-        h.send(".#{p} #{get_consents.join(', ')}")
+        tell(h, p, get_consents.join(', '))
       when 'get temperature'
         h.send(".#{p} Temperature is currently #{session.temperature}")
       when /^set temperature ([+-]?([0-9]*[.])?[0-9]+)$/
@@ -30,10 +41,10 @@ module Admin
         target = $1
         hist = session.read_history(target)
         if hist.nil?
-          h.send(".#{p} I don't have any  session data for #{target}")
+          h.send(".#{p} I don't have any session data for #{target}")
         else
           h.send(".#{p} Here is the session data for #{target}")
-          h.send(".#{p} #{hist}")
+          tell(h, p, hist.to_s)
         end
       else
         h.send(".#{p} Sorry, I don't know how to do '#{callback}'.")

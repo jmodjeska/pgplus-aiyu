@@ -1,19 +1,9 @@
 require 'net-telnet'
 require_relative 'strings'
 
-private def cfg(profile, key)
-  return CONFIG.dig('profiles', profile, key)
-end
-
 class ConnectTelnet
-  def initialize(profile)
-    @profile = profile
-    @username = cfg(@profile, 'username')
-    @ip = cfg(@profile, 'ip')
-    @port = cfg(@profile, 'port')
-    @name = cfg(@profile, 'talker_name')
-    @prompt = cfg(@profile, 'prompt')
-    puts "-=> Connecting to: #{@name}"
+  def initialize
+    puts "-=> Connecting to: #{TALKER_NAME}"
     @client = new_client
   end
 
@@ -21,44 +11,43 @@ class ConnectTelnet
     File.truncate(LOG, 0) if File.exist?(LOG)
     begin
       client = Net::Telnet::new(
-        "Host" => @ip,
-        "Port" => @port,
-        "Prompt" => /#{@prompt} \z/n,
-        "Binmode" => true,
-        "Telnetmode" => true,
-        "Timeout" => CONFIG.dig('timings', 'telnet_timeout'),
-        "Output_log" => LOG,
-        "Dump_Log" => true,
+        "Host"         => IP,
+        "Port"         => PORT,
+        "Prompt"       => /#{PROMPT} \z/n,
+        "Timeout"      => TELNET_TIMEOUT,
+        "Output_log"   => LOG,
+        "Telnetmode"   => true,
+        "Binmode"      => true,
         "Debug_Output" => true,
-        'Preference' => {'WILL' => [24, 25, 31]}
+        "Dump_Log"     => true
       )
     rescue Errno::EHOSTUNREACH, Net::OpenTimeout => e
-      abort "Can't reach #{@ip} at port #{@port}\n".red
+      abort "Can't reach #{IP} at port #{PORT}\n".red
     rescue Errno::ECONNREFUSED => e
-      abort "Connection refused to #{@ip} at port #{@port}.\n".red
+      abort "Connection refused to #{IP} at port #{PORT}.\n".red
     end
 
     # Validate connection
     result = IO.readlines(LOG)[1].chomp!
-    unless result == "Connected to #{@ip}."
+    unless result == "Connected to #{IP}."
       abort "Talker connection failed (result: #{result})".red
     end
 
     # Login + validation
-    client.puts(@username)
+    client.puts(AI_NAME)
     fork do
-      sleep CONFIG.dig('timings', 'slowness_tolerance')
+      sleep SLOWNESS_TOLERANCE
       if system("grep 'try again!' #{LOG} > /dev/null")
-        puts "Talker login failed (password) for #{@username}".red
+        puts "Talker login failed (password) for #{AI_NAME}".red
       elsif system("grep 'already logged on here' #{LOG} > /dev/null") ||
         system("grep 'Last logged in' #{LOG} > /dev/null")
-        puts "-=> Talker login successful for #{@username} "\
+        puts "-=> Talker login successful for #{AI_NAME} "\
           "(use `tail -f logs/output.log` to watch)\n".green
       else
-        puts "Talker login failed for #{@username} (see #{LOG})".red
+        puts "Talker login failed for #{AI_NAME} (see #{LOG})".red
       end
     end
-    client.cmd(cfg(@profile, 'password'))
+    client.cmd(PASSWORD)
     sleep 1 # Avoid exit before forked process completes
     return client
   end
@@ -66,9 +55,6 @@ class ConnectTelnet
   def send(cmd)
     stack = ''
     @client.cmd(cmd) { |o| stack << o }
-    if stack.force_encoding("ASCII-8BIT").match(/[\xff\xf9]/n)
-      stack = "-=> Invalid encoding detected. Skipping output.".magenta
-    end
     return stack
   end
 
@@ -82,7 +68,7 @@ class ConnectTelnet
     if system("grep 'Thank you for visiting' #{LOG} > /dev/null") ||
       system("grep 'Thanks for visiting' #{LOG} > /dev/null") ||
       system("grep 'please come again!' #{LOG} > /dev/null")
-      log("Talker logout successful for #{@username}", :warn)
+      log("Talker logout successful for #{AI_NAME}", :warn)
     else
       log("Disconnected ungracefully.", :error)
     end

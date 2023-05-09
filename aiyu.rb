@@ -5,8 +5,10 @@ include Actions
 include Admin
 include SystemOps
 
-CONFIG = YAML.load_file('config/config.yaml')
-LOG = CONFIG.dig('log')
+CONFIG          = YAML.load_file(CONFIG_FILE)
+AI_NAME         = CONFIG.dig('ai_name')
+ADMIN_NAME      = CONFIG.dig('admin_access')
+DEFAULT_PROFILE = CONFIG.dig('default_profile')
 
 ##################################################
 # CLI ARGUMENTS
@@ -14,20 +16,26 @@ LOG = CONFIG.dig('log')
 o = Optimist::options do
   banner "\nSynopsis: ruby aiyu.rb\n\n"
   opt :profile, "Specify a talker profile",
-    :default => CONFIG.dig('default_profile')
+    :default => DEFAULT_PROFILE
 end
 
-profile = o[:profile]
-unless CONFIG.dig('profiles', profile)
-  abort "Profile `#{profile}` does not exist."
+if CONFIG.dig('profiles', o[:profile])
+  SOCIALS_DIR = CONFIG.dig('profiles', o[:profile], 'socials_dir')
+  TALKER_NAME = CONFIG.dig('profiles', o[:profile], 'talker_name')
+  PASSWORD    = CONFIG.dig('profiles', o[:profile], 'password')
+  PROMPT      = CONFIG.dig('profiles', o[:profile], 'prompt')
+  PORT        = CONFIG.dig('profiles', o[:profile], 'port')
+  IP          = CONFIG.dig('profiles', o[:profile], 'ip')
+else
+  abort "Profile `#{o[:profile]}` does not exist."
 end
 
 ##################################################
 # MAIN LOOP
 
-def main_loop(h, session, profile, social, q)
+def main_loop(h, session, social, q)
   shutdown_event = false
-  sleep CONFIG.dig('timings', 'slowness_tolerance')
+  sleep SLOWNESS_TOLERANCE
   configure_talker_settings(h)
   until (shutdown_event) do
     log_time
@@ -59,7 +67,7 @@ def main_loop(h, session, profile, social, q)
       end
     end
     sleep 1 unless shutdown_event
-    h.write("\xff\xfc\xf9")
+    h.write(IAC + WONT + GA)
   end
   log("Detected shutdown event. Exiting.", :error)
   h.send('wave')
@@ -69,9 +77,9 @@ rescue Net::ReadTimeout, Errno::ECONNRESET, TestReconnectSignal => e
     log("Connection interrupted: #{e}. Forcing reconnect.", :warn)
     h.done
     session.log_recon
-    h = ConnectTelnet.new(profile)
-    q = Queues.new(h, profile, social)
-    main_loop(h, session, profile, social, q)
+    h = ConnectTelnet.new
+    q = Queues.new(h, social)
+    main_loop(h, session, social, q)
   else
     log("Max reconnects reached. Exiting.", :error)
     h.done
@@ -86,12 +94,12 @@ puts "\n"
 abort "-=> Couldn't terminate existing process #{pid}".red if process_conflict
 
 begin
-  h = ConnectTelnet.new(profile)
+  h = ConnectTelnet.new
 rescue Net::ReadTimeout
   abort "-=> Timed out after initial connection (check prompt?)".red
 end
 
-social = Social.new(profile)
+social = Social.new
 session = Sessions.new
-q = Queues.new(h, profile, social)
-main_loop(h, session, profile, social, q)
+q = Queues.new(h, social)
+main_loop(h, session, social, q)

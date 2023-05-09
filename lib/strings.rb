@@ -1,5 +1,4 @@
 module Strings
-
   def clean_ansi(str)
     o = str.gsub(/\e\[([;\d]+)?m/, '')
     o = o.gsub(/\n|\s+/, ' ').strip
@@ -58,24 +57,23 @@ module Strings
     return chunks
   end
 
-  def parse_message(str, profile)
+  def parse_message(str)
     msgs = {}
-    name = CONFIG.dig('profiles', profile, 'username')
-    direct_msgs = CONFIG.dig('triggers', 'direct_msgs')
-    room_msgs = CONFIG.dig('triggers', 'room_msgs')
-    channel_prefixes = CONFIG.dig('triggers', 'channel_prefixes')
+    DIRECT_MESSAGES
+    ROOM_MESSAGES
+    CHANNEL_PREFIXES
     # direct message
-    if (str[0] == ">") && (direct_msgs.any? { |s| str.include?(s) })
+    if (str[0] == ">") && (DIRECT_MESSAGES.any? { |s| str.include?(s) })
       msgs[:p], msgs[:msg] = str.match(/^> (\S+).*?\'(.*?)\'$/).captures
       msgs[:loc] = :direct
     # room message
     elsif str.match(/^([a-zA-Z]+)\s
-      #{Regexp.union(room_msgs)}\s'#{name}[,]?\s(.*?)'$/ix)
+      #{Regexp.union(ROOM_MESSAGES)}\s'#{AI_NAME}[,]?\s(.*?)'$/ix)
       msgs[:p], msgs[:msg] = $1, $2
       msgs[:loc] = :room
     # channel message
-    elsif str.match(/^(#{Regexp.union(channel_prefixes)})\s([a-zA-Z]+)\s
-      #{Regexp.union(room_msgs)}\s'#{name}[,]?\s(.*?)'$/ix)
+    elsif str.match(/^(#{Regexp.union(CHANNEL_PREFIXES)})\s([a-zA-Z]+)\s
+      #{Regexp.union(ROOM_MESSAGES)}\s'#{AI_NAME}[,]?\s(.*?)'$/ix)
       msgs[:loc], msgs[:p], msgs[:msg] = $1, $2, $3
     end
     return msgs

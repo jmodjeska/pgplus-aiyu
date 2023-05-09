@@ -1,19 +1,17 @@
 class Social
-  def initialize(profile)
-    @profile = profile
+  def initialize
     @socials = learn_socials
     @overrides = YAML.load_file('config/overrides.yaml')
   end
 
   private def learn_socials
     socs = {}
-    soc_dir = CONFIG.dig('profiles', @profile, 'socials_dir')
     skipped = []
     begin
-      Dir.foreach(soc_dir) do |f|
+      Dir.foreach(SOCIALS_DIR) do |f|
         next if f == '.' or f == '..'
-        next unless File.readlines("#{soc_dir}/#{f}")[2].match('4')
-        soc = File.readlines("#{soc_dir}/#{f}")[6]
+        next unless File.readlines("#{SOCIALS_DIR}/#{f}")[2].match('4')
+        soc = File.readlines("#{SOCIALS_DIR}/#{f}")[6]
         begin
           socs[f] = Regexp.new(soc.gsub('{', '(').gsub('}', ')').strip)
         rescue
