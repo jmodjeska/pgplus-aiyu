@@ -35,7 +35,7 @@ end
 
 def main_loop(h, session, social, q)
   shutdown_event = false
-  sleep SLOWNESS_TOLERANCE
+  sleep LOGIN_TOLERANCE
   configure_talker_settings(h)
   until (shutdown_event) do
     log_time

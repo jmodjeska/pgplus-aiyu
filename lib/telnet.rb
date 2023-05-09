@@ -3,11 +3,11 @@ require_relative 'strings'
 
 class ConnectTelnet
   def initialize
-    puts "-=> Connecting to: #{TALKER_NAME}"
     @client = new_client
   end
 
   def new_client
+    puts "-=> Connecting to: #{TALKER_NAME}"
     File.truncate(LOG, 0) if File.exist?(LOG)
     begin
       client = Net::Telnet::new(
@@ -22,34 +22,37 @@ class ConnectTelnet
         "Dump_Log"     => true
       )
     rescue Errno::EHOSTUNREACH, Net::OpenTimeout => e
-      abort "Can't reach #{IP} at port #{PORT}\n".red
+      abort "Can't reach #{IP}:#{PORT}\n".red
     rescue Errno::ECONNREFUSED => e
-      abort "Connection refused to #{IP} at port #{PORT}.\n".red
+      abort "Connection refused to #{IP}:#{PORT}.\n".red
     end
+    validate_connection
+    fork { validate_login }
+    client.puts(AI_NAME)
+    client.cmd(PASSWORD)
+    return client
+  end
 
-    # Validate connection
+  private def is_logged(text_to_grep)
+    return system("grep '#{text_to_grep}' #{LOG} > /dev/null")
+  end
+
+  private def validate_connection
     result = IO.readlines(LOG)[1].chomp!
     unless result == "Connected to #{IP}."
-      abort "Talker connection failed (result: #{result})".red
+      abort "Connection failed (result: #{result})".red
     end
+  end
 
-    # Login + validation
-    client.puts(AI_NAME)
-    fork do
-      sleep SLOWNESS_TOLERANCE
-      if system("grep 'try again!' #{LOG} > /dev/null")
-        puts "Talker login failed (password) for #{AI_NAME}".red
-      elsif system("grep 'already logged on here' #{LOG} > /dev/null") ||
-        system("grep 'Last logged in' #{LOG} > /dev/null")
-        puts "-=> Talker login successful for #{AI_NAME} "\
-          "(use `tail -f logs/output.log` to watch)\n".green
-      else
-        puts "Talker login failed for #{AI_NAME} (see #{LOG})".red
-      end
+  private def validate_login
+    sleep LOGIN_TOLERANCE
+    if is_logged('try again!')
+      puts "Password failed for #{AI_NAME}".red
+    elsif is_logged('already logged on here') || is_logged('Last logged in')
+      puts "-=> Logged in as #{AI_NAME} (`tail -f #{LOG}` to watch)\n".green
+    else
+      puts "Login failed for #{AI_NAME} (see #{LOG})".red
     end
-    client.cmd(PASSWORD)
-    sleep 1 # Avoid exit before forked process completes
-    return client
   end
 
   def send(cmd)
@@ -64,11 +67,9 @@ class ConnectTelnet
 
   def done
     @client.cmd("quit")
-    sleep 0.1
-    if system("grep 'Thank you for visiting' #{LOG} > /dev/null") ||
-      system("grep 'Thanks for visiting' #{LOG} > /dev/null") ||
-      system("grep 'please come again!' #{LOG} > /dev/null")
-      log("Talker logout successful for #{AI_NAME}", :warn)
+    sleep LOGOUT_TOLERANCE
+    if is_logged('for visiting') || is_logged('Please come again!')
+      log("Logout successful for #{AI_NAME}", :warn)
     else
       log("Disconnected ungracefully.", :error)
     end

@@ -14,14 +14,15 @@ DEFAULT_TEMPERATURE = 1.0
 GPT_MAX_TOKENS      = 250
 
 # Timings
-SLOWNESS_TOLERANCE  =    3 # seconds
-CLEAR_LOG_INTERVAL  =   96 # hours
-IDLE_INTERVAL       =   10 # mins
-Q_READ_INTERVAL     =    2 # secs
-SESSION_DURATION    =    2 # hours
-MAX_RECONNECTS      =    2 # per hour
-TELNET_TIMEOUT      =    3 # seconds
-ONE_HOUR            = 3600 #seconds
+LOGIN_TOLERANCE     =    2   # secs
+LOGOUT_TOLERANCE    =    0.4 # secs
+CLEAR_LOG_INTERVAL  =   96   # hours
+IDLE_INTERVAL       =   10   # mins
+Q_READ_INTERVAL     =    2   # secs
+SESSION_DURATION    =    2   # hours
+MAX_RECONNECTS      =    2   # per hour
+TELNET_TIMEOUT      =    3   # secs
+ONE_HOUR            = 3600   # secs
 
 # Triggers
 CHANNEL_COMMANDS    = ['cu', "pu"]
