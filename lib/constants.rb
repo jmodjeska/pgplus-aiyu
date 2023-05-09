@@ -1,3 +1,6 @@
+# Code Version
+VERSION = 1.0
+
 # Files
 CONFIG_FILE         = 'config/config.yaml'
 LOG                 = 'logs/output.log'
@@ -10,6 +13,9 @@ WONT = "\xfc"
 GA   = "\xf9"
 
 #GPT Config
+GPT_API_URI         = 'https://api.openai.com/v1/chat/completions'
+GPT_API_KEY         = ENV['OPENAI_API_KEY']
+GPT_MODEL           = 'gpt-3.5-turbo'
 DEFAULT_TEMPERATURE = 1.0
 GPT_MAX_TOKENS      = 250
 
@@ -29,3 +35,7 @@ CHANNEL_COMMANDS    = ['cu', "pu"]
 CHANNEL_PREFIXES    = ["(UberChannel)", "[UberSpod]"]
 DIRECT_MESSAGES     = ["tells you", "asks of you", "exclaims to you"]
 ROOM_MESSAGES       = ["says", "asks", "exclaims"]
+
+# Config Strings (please keep the original URL intact for license and credit)
+DESCRIPTION = "^Y.*^N ChatGPT-connected AI bot v#{VERSION} ^R<3^N ^P^^_^^^N"
+URL = "https://github.com/jmodjeska/pgplus-aiyu"

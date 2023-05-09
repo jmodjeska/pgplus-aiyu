@@ -3,52 +3,51 @@ require 'json'
 require_relative 'strings'
 
 class ChatGPT
-  def initialize(msg, history, temperature)
-    @msg = msg.force_encoding('UTF-8')
-    @history = history.dup
-    @temperature = temperature
+  def initialize(msg, hist, temp)
+    history = hist.dup
+    history << { "role": "user", "content": msg.force_encoding('UTF-8') }
+    @uri = URI(GPT_API_URI)
+    @headers = {
+      'Content-Type': 'application/json',
+      'Authorization': "Bearer #{GPT_API_KEY}"
+    }
+    @body = {
+      'model': GPT_MODEL,
+      'messages': history,
+      'temperature': temp,
+      'max_tokens': GPT_MAX_TOKENS
+    }
   end
 
   def get_response
-    @history << { "role": "user", "content": @msg }
-
-    uri = URI('https://api.openai.com/v1/chat/completions')
-    headers = {
-      'Content-Type': 'application/json',
-      'Authorization': "Bearer #{ENV['OPENAI_API_KEY']}"
-    }
-    body = {
-      'model': 'gpt-3.5-turbo',
-      'messages': @history,
-      'temperature': @temperature,
-      'max_tokens': GPT_MAX_TOKENS
-    }
-
     begin
-      http = Net::HTTP.new(uri.host, uri.port)
+      http = Net::HTTP.new(@uri.host, @uri.port)
       http.use_ssl = true
-      request = Net::HTTP::Post.new(uri, headers)
-      request.body = body.to_json
+      request = Net::HTTP::Post.new(@uri, @headers)
+      request.body = @body.to_json
       response = http.request(request)
       log("DEBUG: #{response.body.to_s}", :info)
-      resp = JSON.parse(response.body.force_encoding('UTF-8'))
-      reply = resp.dig('choices', 0, 'message', 'content')
-      finish_reason = resp.dig('choices', 0, 'finish_reason')
-      reply += " ... [[[TRUNCATED]]]" if finish_reason == "length"
-      return reply.gsub(/\n+/, ' ')
-
+      return parse_reply(response.body.force_encoding('UTF-8'))
     rescue StandardError => e
+      default_msg =
+        "Oh no! Something went wrong and I can't connect to " \
+        "ChatGPT. Sorry about that! I've logged the error so an " \
+        "admin can investigate."
+      limit_msg =
+        "Sorry, I've exceeded my rate limit with ChatGPT. " \
+        "Please try again in a little while."
       log("DEBUG: Error: #{e}", :error)
-      if e.is_a?(Hash) && e.dig('error', 'message')
-        if e.dig('error', 'message').start_with?("Rate limit")
-          return "Sorry, I've exceeded my rate limit with ChatGPT. "\
-            "Please try again in a little while."
-        end
-      else
-        return "Oh no! Something went wrong and I can't connect to "\
-          "ChatGPT. Sorry about that! I've logged the error so an "\
-          "admin can investigate."
-      end
+      return default_msg unless e.is_a?(Hash) && e.dig('error', 'message')
+      return limit_msg if e.dig('error', 'message').start_with?("Rate limit")
+      return default_msg
     end
+  end
+
+  private def parse_reply(json_response)
+    response = JSON.parse(json_response)
+    reply = response.dig('choices', 0, 'message', 'content')
+    finish_reason = response.dig('choices', 0, 'finish_reason')
+    reply += " ... [[[TRUNCATED]]]" if finish_reason == "length"
+    return reply.gsub(/\n+/, ' ')
   end
 end

@@ -39,15 +39,14 @@ class Social
   end
 
   def parse(str)
-    do_social = {}
     str.match(/^> (.*?) (.*?)$/)
-    if ($1 && $2)
-      p, used_soc = $1, $2
-      @socials.each do |k, v|
-        if used_soc.match(v)
-          do_social[:p], do_social[:soc] = p, @socials.keys.sample
-          break
-        end
+    return {} unless $1 && $2
+    p, used_soc = $1, $2
+    do_social = {}
+    @socials.each do |k, v|
+      if used_soc.match(v)
+        do_social[:p], do_social[:soc] = p, @socials.keys.sample
+        break
       end
     end
     return do_social

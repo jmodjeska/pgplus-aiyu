@@ -8,6 +8,13 @@ module Strings
     return o
   end
 
+  def process_message(str)
+    chunks_array = chunk_string(str)
+    chunks_array = format_numbered_list(chunks_array)
+    chunks_array[-1] = handle_truncated_response(chunks_array[-1])
+    return chunks_array
+  end
+
   def chunk_string(str)
     chunks = []
     while str.length > 0
@@ -28,55 +35,33 @@ module Strings
       end
       chunks << chunk
     end
-    format_numbered_list(chunks)
-  end
-
-  def format_numbered_list(chunks)
-    num = ""
-    if chunks.length > 1
-      chunks.each_with_index do |chunk, i|
-        chunk.prepend(num)
-        if chunk.match(/ (\d{1,2}\.)$/)
-          num = "#{$1} "
-          chunks[i] = chunk[0...-(num.length)] unless chunks[i+1].nil?
-        else
-          num = ""
-        end
-      end
-    end
-    handle_truncated_response(chunks)
-  end
-
-  def handle_truncated_response(chunks)
-    if chunks[-1].match(/\[\[\[TRUNCATED\]\]\]/)
-      chunks[-1].delete!('[[[TRUNCATED]]]')
-      trunc_text = "Sorry, there was more, but I had to truncate it due "\
-        "to excessive length."
-      chunks << trunc_text
-    end
     return chunks
   end
 
-  def parse_message(str)
-    msgs = {}
-    DIRECT_MESSAGES
-    ROOM_MESSAGES
-    CHANNEL_PREFIXES
-    # direct message
-    if (str[0] == ">") && (DIRECT_MESSAGES.any? { |s| str.include?(s) })
-      msgs[:p], msgs[:msg] = str.match(/^> (\S+).*?\'(.*?)\'$/).captures
-      msgs[:loc] = :direct
-    # room message
-    elsif str.match(/^([a-zA-Z]+)\s
-      #{Regexp.union(ROOM_MESSAGES)}\s'#{AI_NAME}[,]?\s(.*?)'$/ix)
-      msgs[:p], msgs[:msg] = $1, $2
-      msgs[:loc] = :room
-    # channel message
-    elsif str.match(/^(#{Regexp.union(CHANNEL_PREFIXES)})\s([a-zA-Z]+)\s
-      #{Regexp.union(ROOM_MESSAGES)}\s'#{AI_NAME}[,]?\s(.*?)'$/ix)
-      msgs[:loc], msgs[:p], msgs[:msg] = $1, $2, $3
+  def format_numbered_list(arr)
+    num = ""
+    return arr unless arr.length > 1
+    arr.each_with_index do |chunk, i|
+      chunk.prepend(num)
+      if chunk.match(/ (\d{1,2}\.)$/)
+        num = "#{$1} "
+        arr[i] = chunk[0...-(num.length)] unless arr[i+1].nil?
+      else
+        num = ""
+      end
     end
-    return msgs
+    return arr
+  end
+
+  def handle_truncated_response(str)
+    if str.match(/\[\[\[TRUNCATED\]\]\]/)
+      str = "Sorry, there was more, but I truncated it due to length."
+    end
+    return str
+  end
+
+  def valid_player(p)
+    return !(p.nil? || p.length < 2)
   end
 
   def log(str, level)

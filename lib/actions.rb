@@ -1,21 +1,23 @@
 require_relative 'strings'
-require_relative 'version'
 
 module Actions
   include Strings
-  include Version
 
   def configure_talker_settings(h)
     toggle_pager(h, "unpaged")
     muffle_clock(h)
     h.send("see_gfx off")
-    h.send("desc ^Y.*^N ChatGPT-connected AI bot v#{VERSION} ^R<3^N ^P^^_^^^N")
-    h.send("url https://github.com/jmodjeska/pgplus-aiyu")
+    h.send("desc #{DESCRIPTION}")
+    h.send("url #{URL}")
     h.send("main")
     send_greeting(h)
   end
 
   def process_callback(h, cmd, p, content)
+    unless valid_player(p)
+      log("Can't process callback for invalid player: #{p}", :warn)
+      return false
+    end
     case cmd
     when :tell
       tell(h, p, content)
@@ -26,7 +28,8 @@ module Actions
     when :do_social
       h.send("#{content} #{p}")
     else
-      puts "Undefined callback command: #{cmd}"
+      log("Undefined callback command: #{cmd}", :warn)
+      return false
     end
   end
 
@@ -61,7 +64,9 @@ module Actions
 
   def log_time
     t = Time.now
-    log("-=> Time: #{t}", :info) if (t.min == 38) && (t.sec == 43)
+    if (t.min == 38) && (t.sec == 43)
+      log("-=> Time: #{t}", :info)
+    end
   end
 
   def clear_log(h, log)
@@ -73,7 +78,7 @@ module Actions
 
   def tell(h, p, msg)
     msg.force_encoding('ASCII-8BIT')
-    chunks = chunk_string(msg)
+    chunks = process_message(msg)
     chunks.each do |chunk|
       h.send(".#{p} #{chunk}")
       sleep 1
@@ -82,14 +87,11 @@ module Actions
 
   def say_to_room_or_channel(h, p, msg, cmd)
     msg.force_encoding('ASCII-8BIT')
-    chunks = chunk_string(msg)
-    chunks.each_with_index do |chunk, i|
-      if i == 0
-        chunk[0] = chunk[0].downcase
-        h.send("#{cmd} #{p}, #{chunk}")
-      else
-        h.send("#{cmd} #{chunk}")
-      end
+    chunks = process_message(msg)
+    chunks[0][0] = chunks[0][0].downcase
+    h.send("#{cmd} #{p}, #{chunks[0]}")
+    chunks.drop(1).each do |chunk|
+      h.send("#{cmd} #{chunk}")
       sleep 1
     end
   end

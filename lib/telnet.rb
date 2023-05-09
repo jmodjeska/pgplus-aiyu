@@ -61,8 +61,8 @@ class ConnectTelnet
     return stack
   end
 
-  def write(cmd)
-    @client.write(cmd)
+  def suppress_go_ahead
+    @client.write(IAC + WONT + GA)
   end
 
   def done

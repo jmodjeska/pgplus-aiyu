@@ -37,38 +37,40 @@ def main_loop(h, session, social, q)
   shutdown_event = false
   sleep LOGIN_TOLERANCE
   configure_talker_settings(h)
-  until (shutdown_event) do
+  until shutdown_event
+    # Periodic actions
     log_time
     do_idle_command(h)
     clear_log(h, LOG)
+    # Failsafe for transient IAC GA signal
+    h.suppress_go_ahead
+    # Read input into queue and process
     q.build_queue.each do |qi|
-      p, callback, flags = qi[:p], qi[:callback], qi[:flags]
-      content = qi[:content]
-      if flags.include? :shutdown_event
+      p, callback, content = qi[:p], qi[:callback], qi[:content]
+      case qi[:flag]
+      when :shutdown_event
         shutdown_event = true
         break
-      elsif flags.include? :admin_command
+      when :admin_command
         admin_do_cmd(h, callback, p, session)
-        break
-      end
-      next if flags.include? :invalid_player
-      if callback == :do_social
+      when :do_social
         process_callback(h, callback, p, content)
-      elsif flags.include? :override
+      when :override
         process_callback(h, callback, p, qi[:override_response])
-      elsif check_disclaimer(p)
-        temp = session.temperature
-        history = session.get_history(p, callback)
-        response = ChatGPT.new(content, history, temp).get_response
-        process_callback(h, callback, p, response)
-        session.add_to_history(p, [content, response], callback)
-      else
-        process_disclaimer(h, p, content)
+      when :chat_gpt
+        if check_disclaimer(p)
+          temp, hist = session.temperature, session.get_history(p, callback)
+          response = ChatGPT.new(content, hist, temp).get_response
+          process_callback(h, callback, p, response)
+          session.add_to_history(p, [content, response], callback)
+        else
+          process_disclaimer(h, p, content)
+        end
       end
     end
     sleep 1 unless shutdown_event
-    h.write(IAC + WONT + GA)
   end
+  # Shutdown
   log("Detected shutdown event. Exiting.", :error)
   h.send('wave')
   h.done

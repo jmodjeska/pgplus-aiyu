@@ -37,16 +37,12 @@ class Sessions
 
   def recons_available
     return true if @recons.empty?
-
     last_recon = @recons.max
     if (Time.now - last_recon) > ONE_HOUR
       @recons = []
       return true
-    elsif @recons.count { |r| (Time.now - r) < ONE_HOUR } < MAX_RECONNECTS
-      return true
-    else
-      return false
     end
+    return @recons.count { |r| (Time.now - r) < ONE_HOUR } < MAX_RECONNECTS
   end
 
   def log_recon

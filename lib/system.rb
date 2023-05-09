@@ -1,8 +1,8 @@
 module SystemOps
   private def get_pid
-    if (`ps aux | grep aiyu.rb | grep -v grep`)
-      .match(/^(.*?)(\d+)\s(.*?)aiyu.rb\n$/)
-      return $2 unless ($2.to_i == $$)
+    cmd = `ps aux | grep aiyu.rb | grep -v grep`
+    if cmd.match(/^(.*?)(\d+)\s(.*?)aiyu.rb\n$/)
+      return $2 unless $2.to_i == $$
     end
   end
 
