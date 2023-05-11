@@ -3,8 +3,7 @@
 require_relative 'strings'
 require_relative 'matchers'
 
-# Parse input from the talker connection and queue actionable tasks for
-# processing
+# Parse talker connection input and queue actionable tasks for processing
 class Queues
   include Strings
   include Matchers

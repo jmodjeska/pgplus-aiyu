@@ -18,33 +18,36 @@ module Strings
     return chunks_array
   end
 
-  def chunk_string(str)
-    return [] if str.empty?
+  def chunk_string(text)
     chunks = []
-    while str.length.positive?
-      if str.length <= MESSAGE_CHUNK_SIZE
-        chunks << str.strip
-        break
-      end
-      c_size = find_chunk_size(str)
-      chunk = str.slice!(0, c_size).strip
-      if str[0] == ' '
-        str[0] = ''
-      elsif chunk[-1] != ' '
-        c_size -= chunk.length - chunk.rindex(' ') - 1
-        chunk = chunk.slice(0, chunk.rindex(' ')).strip
-      end
-      chunks << chunk
-    end
+    chunks, chunk = sentences_to_chunks(text, chunks)
+    chunks = words_to_chunks(chunks, chunk) if chunk.length.positive?
     return chunks
   end
 
-  def find_chunk_size(chunk)
-    c_size = MESSAGE_CHUNK_SIZE
-    while !['.', '!', '?'].include?(chunk[c_size - 1]) && c_size.positive?
-      c_size -= 1
+  def sentences_to_chunks(text, chunks, chunk = '')
+    sentences = text.scan(/[^.!?]+[.!?]/)
+    sentences.each do |sentence|
+      if chunk.length + sentence.length <= MESSAGE_CHUNK_SIZE
+        chunk += sentence
+      else
+        chunks << chunk.strip
+        chunk = sentence
+      end
     end
-    return c_size.zero? ? MESSAGE_CHUNK_SIZE : c_size
+    return chunks, chunk
+  end
+
+  def words_to_chunks(chunks, chunk)
+    words = chunk.split
+    while words.length.positive?
+      line = ''
+      while line.length < MESSAGE_CHUNK_SIZE && words.length.positive?
+        line += "#{words.shift} "
+      end
+      chunks << line.strip
+    end
+    return chunks
   end
 
   def format_numbered_list(arr)

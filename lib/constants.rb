@@ -49,7 +49,7 @@ DIRECT_MESSAGES     = ['tells you', 'asks of you', 'exclaims to you'].freeze
 ROOM_MESSAGES       = %w[says asks exclaims].freeze
 
 # Talker Interactions
-MESSAGE_CHUNK_SIZE  = 250
+MESSAGE_CHUNK_SIZE  = 250 # chars
 
 # Config Strings (please keep the original URL intact for license and credit)
 DESCRIPTION = "^Y.*^N ChatGPT-connected AI bot v#{VERSION} ^R<3^N ^P^^_^^^N"
