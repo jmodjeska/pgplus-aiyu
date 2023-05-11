@@ -28,4 +28,4 @@ config.yaml
 output.log
 .vscode
 disclaimer.log.yaml
-
+.rubocop.yml
