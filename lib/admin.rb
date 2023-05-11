@@ -1,54 +1,69 @@
+# frozen_string_literal: true
+
 require_relative 'actions'
 
+# Commands that the designated admin can directly issue to Aiyu
 module Admin
-include Actions
+  include Actions
+
+  ADMIN_COMMANDS = [
+    'reconnect', 'list consents', 'get temperature',
+    'set temperature <new temperature>',
+    'session for <name or channel>', 'help'
+  ].freeze
 
   class TestReconnectSignal < StandardError; end
 
   def test_reconnect
-    raise TestReconnectSignal.new "Received Test Reconnect Signal"
+    raise TestReconnectSignal, 'Received Test Reconnect Signal'
   end
 
-  def get_consents
-    return YAML.load_file(DISCLAIMER_LOG).keys
+  def check_valid_admin(conn, player)
+    return true if player == ADMIN_NAME
+    conn.send(".#{ADMIN_NAME} #{player} just tried to execute #{callback}")
+    return false
   end
 
-  def admin_do_cmd(h, callback, p, session)
-    if p != ADMIN_NAME
-      h.send(".#{ADMIN_NAME} #{p} just tried to execute #{callback}")
-      return false
-    end
-    available_admin_commands = [
-      'reconnect', 'list consents', 'get temperature',
-      'set temperature <new temperature>',
-      'session for <name or channel>', 'help'
-    ]
-    case callback
-    when 'help'
-      h.send(".#{p} I can do the following admin commands:")
-      tell(h, p, available_admin_commands.join(', '))
-    when 'reconnect'
-      test_reconnect
-    when 'list consents'
-      get_consents
-      h.send(".#{p} The following people have consented to interact:")
-      tell(h, p, get_consents.join(', '))
+  def list_consents(conn, player)
+    conn.send(".#{player} The following people have consented to interact:")
+    tell(conn, player, YAML.load_file(DISCLAIMER_LOG).keys.join(', '))
+  end
+
+  def help_response(conn, player)
+    conn.send(".#{player} I can do the following admin commands:")
+    tell(conn, player, ADMIN_COMMANDS.join(', '))
+  end
+
+  def admin_temperature(conn, task, session)
+    case task[:callback]
     when 'get temperature'
-      h.send(".#{p} Temperature is currently #{session.temperature}")
+      conn.send(".#{task[:p]} Temperature is currently #{session.temp}")
     when /^set temperature ([+-]?([0-9]*[.])?[0-9]+)$/
-      h.send(".#{p} Temperature is now #{session.set_temperature($1)}")
-    when /^session for (.*?)$/
-      target = $1
-      hist = session.read_history(target)
-      if hist.nil?
-        h.send(".#{p} I don't have any session data for #{target}")
-      else
-        h.send(".#{p} Here is the session data for #{target}")
-        tell(h, p, hist.to_s)
-      end
-    else
-      h.send(".#{p} Sorry, I don't know how to do '#{callback}'.")
+      temp = ::Regexp.last_match(1)
+      conn.send(".#{task[:p]} Temperature is now #{session.update_temp(temp)}")
     end
-    return true
+  end
+
+  def show_session(conn, task, session, target)
+    hist = session.read_history(target)
+    if hist.nil?
+      conn.send(".#{task[:p]} I don't have any session data for #{target}")
+    else
+      conn.send(".#{task[:p]} Here is the session data for #{target}")
+      tell(conn, task[:p], hist.to_s)
+    end
+  end
+
+  def do_admin_cmd(conn, task, session)
+    return unless check_valid_admin(conn, task[:p])
+    case task[:callback]
+    when 'help' then help_response(conn, task[:p])
+    when 'list consents' then list_consents(conn, task[:p])
+    when 'reconnect' then test_reconnect
+    when /[g|s]et temperature/ then admin_temperature(conn, task, session)
+    when /^session for (.*?)$/
+      show_session(conn, task, session, ::Regexp.last_match(1))
+    else conn.send(".#{task[:p]} I don't know how to do '#{task[:callback]}'.")
+    end
   end
 end

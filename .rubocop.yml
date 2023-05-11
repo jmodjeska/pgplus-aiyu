@@ -1,0 +1,14 @@
+Style/RedundantReturn:
+  Enabled: false
+
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 80
+
+Naming/VariableNumber:
+  Enabled: False
+
+Style/PerlBackrefs:
+  Enabled: False

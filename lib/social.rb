@@ -1,54 +1,40 @@
+# frozen_string_literal: true
+
+# Learn and use socials
 class Social
   def initialize
-    @socials = learn_socials
-    @overrides = YAML.load_file('config/overrides.yaml')
+    @socials = {}
+    @skipped_socials = []
+    learn_all_socials
   end
 
-  private def learn_socials
-    socs = {}
-    skipped = []
-    begin
-      Dir.foreach(SOCIALS_DIR) do |f|
-        next if f == '.' or f == '..'
-        next unless File.readlines("#{SOCIALS_DIR}/#{f}")[2].match('4')
-        soc = File.readlines("#{SOCIALS_DIR}/#{f}")[6]
-        begin
-          socs[f] = Regexp.new(soc.gsub('{', '(').gsub('}', ')').strip)
-        rescue
-          skipped << "'#{f}'"
-          next
-        end
-      end
-    rescue StandardError => e
-      puts "-=> Error learning socials:\n #{e}"
-      return nil
+  def respond_to_social(used_soc)
+    @socials.each_value do |v|
+      next unless used_soc.match(v)
+      return @socials.keys.sample
     end
-    skipped = (skipped.length > 0) ? "[skipped: #{skipped.join(', ')}]" : ''
-    puts "-=> Learned #{socs.length} complex socials #{skipped}"
-    return socs
   end
 
-  def get_override(str)
-    return false if str.nil?
-    @overrides.keys.each do |k|
-      if str.match?(/#{k}/i)
-        return @overrides[k]
-      end
+  private
+
+  def learn_all_socials
+    Dir.foreach(SOCIALS_DIR) do |f|
+      next if ['.', '..'].include?(f)
+      next unless File.readlines("#{SOCIALS_DIR}/#{f}")[2].match('4')
+      used_msg = File.readlines("#{SOCIALS_DIR}/#{f}")[6]
+      learn_social(f, used_msg)
     end
-    return false
+    skipped = "[skipped: #{@skipped.join(', ')}]" if @skipped&.length&.positive?
+    puts "-=> Learned #{@socials.length} complex socials #{skipped}"
+  rescue StandardError => e
+    puts "-=> Error learning socials:\n #{e}"
   end
 
-  def parse(str)
-    str.match(/^> (.*?) (.*?)$/)
-    return {} unless $1 && $2
-    p, used_soc = $1, $2
-    do_social = {}
-    @socials.each do |k, v|
-      if used_soc.match(v)
-        do_social[:p], do_social[:soc] = p, @socials.keys.sample
-        break
-      end
-    end
-    return do_social
+  # Socials resemble regexes so this mostly works. It skips hard-to-parse
+  # messages like, "Someone points and laughs at you :{o|-||O|*|^|@|#})"
+  def learn_social(filename, msg)
+    @socials[filename] = Regexp.new(msg.gsub('{', '(').gsub('}', ')').strip)
+  rescue StandardError
+    @skipped_socials << "'#{filename}'"
   end
 end

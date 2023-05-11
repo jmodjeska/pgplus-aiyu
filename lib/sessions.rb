@@ -1,38 +1,38 @@
-require 'time'
+# frozen_string_literal: true
 
-# Note: session history follows a player in the case of a direct
+require 'time'
+require_relative 'strings'
+
+# Session manager. Session history follows a player in the case of a direct
 # msg (tell); else it treats the main room or specified channel as a
 # shared group session.
-
 class Sessions
-  attr_accessor :temperature
+  include Strings
+  attr_accessor :temp
 
   def initialize
-    @session, @history = {}, {}
+    @session = {}
+    @history = {}
     @recons = []
-    @temperature = DEFAULT_TEMPERATURE
-    puts "-=> Session manager initialized"
+    @temp = DEFAULT_TEMPERATURE
+    puts '-=> Session manager initialized'
   end
 
-  private def expired(p)
-    return (@session[p] + ONE_HOUR * SESSION_DURATION) < Time.now
+  def expired(player)
+    return (@session[player] + ONE_HOUR * SESSION_DURATION) < Time.now
   end
 
-  private def encode_msgset(msgset)
+  def encode_msgset(msgset)
     o, i = msgset
-    [o, i].each do |str|
-      str.force_encoding('UTF-8')
-      str.encode!('UTF-8', 'binary',
-        invalid: :replace, undef: :replace, replace: '')
-    end
+    [o, i].each { |str| force_utf_8(String.new(str)) }
     return [
-      {"role": "user", "content": o},
-      {"role": "assistant", "content": i}
+      { "role": 'user', "content": o },
+      { "role": 'assistant', "content": i }
     ]
   end
 
-  def set_temperature(temp)
-    @temperature = temp.to_f
+  def update_temp(temp)
+    return @temp = temp.to_f
   end
 
   def recons_available
@@ -46,12 +46,12 @@ class Sessions
   end
 
   def log_recon
-    @recons << Time.now
+    return @recons << Time.now
   end
 
-  def get_history(p, command)
-    hist = (command == :tell) ? p : command
-    if ( (@session.key?(hist)) && !(expired(hist)) && (@history.key?(hist)) )
+  def get_history(player, command)
+    hist = command == :tell ? player : command
+    if @session.key?(hist) && !expired(hist) && @history.key?(hist)
       @session[hist] = Time.now
       return @history[hist]
     elsif @session.key?(hist)
@@ -63,22 +63,16 @@ class Sessions
   end
 
   def read_history(str)
-    @history[str]
+    return @history[str]
   end
 
-  def add_to_history(p, msgset, command)
-    hist = (command == :tell) ? p : command
-    if @history.key?(hist)
-      @history[hist].concat encode_msgset(msgset)
-    else
-      seed_msgset = [{
-        "role": "system",
-        "content": "You are a funny and friendly assistant who "\
-        "has assumed the name #{AI_NAME}."
-      }]
-      @history[hist] = seed_msgset
-      @history[hist].concat encode_msgset(msgset)
+  def append(player, msgset, command)
+    history_scope = command == :tell ? player : command
+    unless @history.key?(history_scope)
+      seed_msgset = [{ "role": 'system', "content": "#{GPT_ROLE} #{AI_NAME}." }]
+      @history[history_scope] = seed_msgset
     end
-    return @history[hist]
+    @history[history_scope].concat encode_msgset(msgset)
+    return @history[history_scope]
   end
 end
