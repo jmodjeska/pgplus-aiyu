@@ -12,26 +12,34 @@ module Strings
   end
 
   def process_message(str)
-    chunks_array = chunk_string(str)
-    chunks_array = format_numbered_list(chunks_array)
-    chunks_array[-1] = handle_truncated_response(chunks_array[-1])
-    return chunks_array
+    return [str] if str.length < MESSAGE_CHUNK_SIZE
+    chunks_arr = chunk_string(str)
+    chunks_arr = format_numbered_list(chunks_arr) if chunks_arr.length > 1
+    chunks_arr[-1] = handle_truncated_response(chunks_arr[-1])
+    return chunks_arr
   end
 
   def chunk_string(text)
-    chunks = []
-    chunks, chunk = sentences_to_chunks(text, chunks)
+    return [text] if text.scan(/[^.!?]+[.!?]/).empty?
+    sentences = text_to_sentences(text)
+    chunks, chunk = sentences_to_chunks(sentences)
     chunks = words_to_chunks(chunks, chunk) if chunk.length.positive?
     return chunks
   end
 
-  def sentences_to_chunks(text, chunks, chunk = '')
-    sentences = text.scan(/[^.!?]+[.!?]/)
+  def text_to_sentences(text)
+    sentences = text.split(/(?<=[.!?])\s+(?=\S)/)
+    sentences.map! { |sentence| "#{sentence} " }
+    return sentences
+  end
+
+  def sentences_to_chunks(sentences, chunk = '')
+    chunks = []
     sentences.each do |sentence|
       if chunk.length + sentence.length <= MESSAGE_CHUNK_SIZE
         chunk += sentence
       else
-        chunks << chunk.strip
+        chunks << chunk
         chunk = sentence
       end
     end
@@ -45,17 +53,15 @@ module Strings
       while line.length < MESSAGE_CHUNK_SIZE && words.length.positive?
         line += "#{words.shift} "
       end
-      chunks << line.strip
+      chunks << line
     end
     return chunks
   end
 
-  def format_numbered_list(arr)
-    return arr unless arr.length > 1
-    num = ''
+  def format_numbered_list(arr, num = '')
     arr.each_with_index do |chunk, i|
       chunk.prepend(num)
-      if chunk.match(/ (\d{1,2}\.)$/)
+      if chunk.match(/(\d{1,2}\.) $/)
         num = "#{::Regexp.last_match(1)} "
         arr[i] = chunk[0...-num.length] unless arr[i + 1].nil?
       else
@@ -66,17 +72,15 @@ module Strings
   end
 
   def handle_truncated_response(str)
-    if str.match(/\[\[\[TRUNCATED\]\]\]/)
-      str = 'Sorry, there was more, but I truncated it due to length.'
-    end
+    trunc_msg = 'Sorry, there was more, but I truncated it due to length.'
+    return trunc_msg if str.match(/\[\[\[TRUNCATED\]\]\]/)
     return str
   end
 
   def force_utf_8(str)
     str = str.dup.force_encoding('UTF-8')
     str.encode!(
-      'UTF-8', 'binary',
-      invalid: :replace, undef: :replace, replace: ''
+      'UTF-8', 'binary', invalid: :replace, undef: :replace, replace: ''
     )
     return str
   end

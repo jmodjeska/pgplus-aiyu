@@ -12,11 +12,26 @@ module Admin
     'session for <name or channel>', 'help'
   ].freeze
 
+  def do_admin_cmd(conn, task, session)
+    return unless check_valid_admin(conn, task[:p])
+    case task[:callback]
+    when 'help' then help_response(conn, task[:p])
+    when 'list consents' then list_consents(conn, task[:p])
+    when 'reconnect' then test_reconnect
+    when /[g|s]et temperature/ then admin_temperature(conn, task, session)
+    when /^session for (.*?)$/
+      show_session(conn, task, session, ::Regexp.last_match(1))
+    else conn.send(".#{task[:p]} I don't know how to do '#{task[:callback]}'.")
+    end
+  end
+
   class TestReconnectSignal < StandardError; end
 
   def test_reconnect
     raise TestReconnectSignal, 'Received Test Reconnect Signal'
   end
+
+  private
 
   def check_valid_admin(conn, player)
     return true if player == ADMIN_NAME
@@ -51,19 +66,6 @@ module Admin
     else
       conn.send(".#{task[:p]} Here is the session data for #{target}")
       tell(conn, task[:p], hist.to_s)
-    end
-  end
-
-  def do_admin_cmd(conn, task, session)
-    return unless check_valid_admin(conn, task[:p])
-    case task[:callback]
-    when 'help' then help_response(conn, task[:p])
-    when 'list consents' then list_consents(conn, task[:p])
-    when 'reconnect' then test_reconnect
-    when /[g|s]et temperature/ then admin_temperature(conn, task, session)
-    when /^session for (.*?)$/
-      show_session(conn, task, session, ::Regexp.last_match(1))
-    else conn.send(".#{task[:p]} I don't know how to do '#{task[:callback]}'.")
     end
   end
 end
