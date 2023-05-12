@@ -7,7 +7,7 @@ module SystemOps
   def process_conflict
     pid.nil? ? (return false) : `kill #{pid}`
     puts "-=> Terminating existing aiyu.rb process #{pid}"
-    return get_pid.nil? ? false : pid
+    return pid.nil? ? false : pid
   end
 
   private
