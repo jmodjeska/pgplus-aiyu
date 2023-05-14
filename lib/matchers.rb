@@ -30,9 +30,9 @@ module Matchers
     /^> (.*?) (.*?)$/
   end
 
-  def match_override(str)
+  def match_override(str, overrides)
     return false if str.nil?
-    @overrides.each_key { |k| return @overrides[k] if str.match?(/#{k}/i) }
+    overrides.each_key { |k| return overrides[k] if str.match?(/#{k}/i) }
     return false
   end
 end

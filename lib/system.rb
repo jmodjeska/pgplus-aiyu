@@ -5,17 +5,20 @@ module SystemOps
   extend self
 
   def process_conflict
-    pid.nil? ? (return false) : `kill #{pid}`
-    puts "-=> Terminating existing aiyu.rb process #{pid}"
-    return pid.nil? ? false : pid
+    pids = conflicting_pids
+    return unless pids
+    pids.each do |pid|
+      puts "-=> Killing existing process #{pid}"
+      Process.kill('TERM', pid)
+    end
+    return conflicting_pids ? conflicting_pids[0] : false
   end
 
   private
 
-  def pid
-    cmd = `ps aux | grep aiyu.rb | grep -v grep`
-    return unless cmd.match(/^(.*?)(\d+)\s(.*?)aiyu.rb\n$/)
-    return if ::Regexp.last_match(2).to_i == Process.pid
-    return ::Regexp.last_match(2)
+  def conflicting_pids
+    matching_pids = `pgrep -f aiyu.rb`.split("\n").map(&:to_i)
+    matching_pids.delete(Process.pid)
+    return matching_pids
   end
 end

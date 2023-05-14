@@ -86,8 +86,10 @@ class Queues
   end
 
   def enqueue_message_or_override(message)
-    message[:flag] = match_override(message[:content]) ? :override : :chat_gpt
-    message[:content] = match_override(message[:content]) || message[:content]
+    message[:flag] =
+      match_override(message[:content], @overrides) ? :override : :chat_gpt
+    message[:content] =
+      match_override(message[:content], @overrides) || message[:content]
     @q << message
   end
 
