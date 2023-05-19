@@ -56,22 +56,9 @@ class ChatGPT
     log("DEBUG: Error: #{err}", :error)
     if err.is_a?(Hash) && err.dig('error', 'message') &&
        err.dig('error', 'message').start_with?('Rate limit')
-      return err_msg_string(:rate_limit)
-    else
-      return err_msg_string(:default)
+      return GPT_ERR_LIMIT
     end
-  end
-
-  def err_msg_string(type)
-    case type
-    when :rate_limit
-      return "Sorry, I've exceeded my rate limit with ChatGPT. " \
-      'Please try again in a little while.'
-    else
-      return "Oh no! Something went wrong and I can't connect to " \
-      "ChatGPT. Sorry about that! I've logged the error so an " \
-      'admin can investigate.'
-    end
+    return GPT_ERR_GENERAL
   end
 
   def parse_reply(json_response)

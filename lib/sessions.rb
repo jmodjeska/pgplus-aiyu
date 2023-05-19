@@ -9,6 +9,7 @@ require_relative 'strings'
 class Sessions
   include Strings
   attr_accessor :temp
+  attr_accessor :session
 
   def initialize
     @session = {}

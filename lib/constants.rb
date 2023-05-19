@@ -22,6 +22,11 @@ DEFAULT_TEMPERATURE = 1.0
 GPT_MAX_TOKENS      = 250
 GPT_ROLE            = 'You are a funny and friendly robot who has '\
                       'assumed the name'
+GPT_ERR_LIMIT       = "Sorry, I've exceeded my rate limit with ChatGPT. " \
+                      'Please try again in a little while.'
+GPT_ERR_GENERAL     = "Oh no! Something went wrong and I can't connect to " \
+                      "ChatGPT. Sorry about that! I've logged the error so " \
+                      'an admin can investigate.'
 
 # Timings
 QUEUE_IDLE          =    1   # secs

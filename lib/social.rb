@@ -32,9 +32,9 @@ class Social
 
   # Socials resemble regexes so this mostly works. It skips hard-to-parse
   # messages like, "Someone points and laughs at you :{o|-||O|*|^|@|#})"
-  def learn_social(filename, msg)
-    @socials[filename] = Regexp.new(msg.gsub('{', '(').gsub('}', ')').strip)
+  def learn_social(social_name, msg)
+    @socials[social_name] = Regexp.new(msg.gsub('{', '(').gsub('}', ')').strip)
   rescue StandardError
-    @skipped_socials << "'#{filename}'"
+    @skipped_socials << "'#{social_name}'"
   end
 end
