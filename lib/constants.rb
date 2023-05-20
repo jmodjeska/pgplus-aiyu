@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Code Version
-VERSION = 1.0
+VERSION = 1.1
 
 # Files
 CONFIG_FILE         = 'config/config.yaml'
@@ -55,6 +55,17 @@ ROOM_MESSAGES       = %w[says asks exclaims].freeze
 
 # Talker Interactions
 MESSAGE_CHUNK_SIZE  = 250 # chars
+
+# Static Strings
+SHUTDOWN_MAX_RECON  = 'Max reconnects reached. Exiting.'
+SHUTDOWN_GENERAL    = 'Detected shutdown event or interrupt. Exiting.'
+CONN_TIMED_OUT      = 'Timed out after initial connection (check prompt?)'
+RECON_SIGNAL_MSG    = 'Received Test Reconnect Signal'
+INVALID_ENCODING    = 'Invalid encoding detected. Resetting queue.'
+MSG_TRUNCATED       = 'Sorry, there was more but I truncated it due to length.'
+ERR_NO_PROFILE      = 'Profile does not exist:'
+LOGGED_IN_MATCHERS  = ['already logged on here', 'Last logged in'].freeze
+LOGGED_OUT_MATCHERS = ['for visiting', 'Please come again!'].freeze
 
 # Config Strings (please keep the original URL intact for license and credit)
 DESCRIPTION = "^Y.*^N ChatGPT-connected AI bot v#{VERSION} ^R<3^N ^P^^_^^^N"

@@ -70,14 +70,12 @@ module Actions
     end
   end
 
-  def disclaim(conn, player, msg)
-    d_log = DISCLAIMER_LOG
+  def disclaim(conn, player, msg, stage = 1)
     d = YAML.load_file(DISCLAIMER)
     if msg.downcase == 'i agree'
-      File.write(d_log, "#{player}: '#{Time.now}'\n", mode: 'a+')
-      d['STAGE 2'].each { |_k, v| tell(conn, player, v.gsub(/\s+/, ' ')) }
-    else
-      d['STAGE 1'].each { |_k, v| tell(conn, player, v.gsub(/\s+/, ' ')) }
+      File.write(DISCLAIMER_LOG, "#{player}: '#{Time.now}'\n", mode: 'a+')
+      stage = 2
     end
+    d["STAGE #{stage}"].each { |_k, v| tell(conn, player, v.gsub(/\s+/, ' ')) }
   end
 end

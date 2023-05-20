@@ -72,8 +72,7 @@ module Strings
   end
 
   def handle_truncated_response(str)
-    trunc_msg = 'Sorry, there was more, but I truncated it due to length.'
-    return trunc_msg if str.match(/\[\[\[TRUNCATED\]\]\]/)
+    return TRUNCATED_MSG if str.match(/\[\[\[TRUNCATED\]\]\]/)
     return str
   end
 
@@ -96,7 +95,7 @@ module Strings
   end
 end
 
-# String monkey-patching to facilitate "text".color
+# String monkey-patching to facilitate "string".color
 class String
   def red
     "\e[31m#{self}\e[0m"

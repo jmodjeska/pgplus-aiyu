@@ -36,7 +36,7 @@ class Queues
   def read_lines_of_input
     lines = @conn.send('').split(/\r\n\e/)
     unless lines.map(&:valid_encoding?)
-      log('Invalid encoding detected. Resetting queue.', :warn)
+      log(INVALID_ENCODING, :warn)
       return []
     end
     return lines.map! { |line| clean_ansi(line) }

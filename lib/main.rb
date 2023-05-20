@@ -32,7 +32,7 @@ class Main
     @conn = ConnectTelnet.new
     @que = Queues.new(@conn, @social)
   rescue Net::ReadTimeout
-    abort '-=> Timed out after initial connection (check prompt?)'.red
+    abort "-=> #{CONN_TIMED_OUT}".red
   end
 
   def supervisor_loop
@@ -103,12 +103,8 @@ class Main
 
   def process_shutdown_event(type = nil)
     @shutdown_event = true
-    case type
-    when :recon
-      log('Max reconnects reached. Exiting.', :error)
-    else
-      log('Detected shutdown event or interrupt. Exiting.', :error)
-    end
+    shutdown_message = type == :recon ? SHUTDOWN_MAX_RECON : SHUTDOWN_GENERAL
+    log(shutdown_message, :error)
     @conn.done
     exit
   end

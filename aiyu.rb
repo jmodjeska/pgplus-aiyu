@@ -26,7 +26,7 @@ if CONFIG.dig('profiles', o[:profile])
   PORT        = CONFIG.dig('profiles', o[:profile], 'port')
   IP          = CONFIG.dig('profiles', o[:profile], 'ip')
 else
-  abort "Profile `#{o[:profile]}` does not exist."
+  abort "#{ERR_NO_PROFILE} `#{o[:profile]}`"
 end
 
 # Runtime

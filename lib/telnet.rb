@@ -37,7 +37,7 @@ class ConnectTelnet
     @client.cmd('wave')
     @client.cmd('quit')
     sleep LOGOUT_TOLERANCE
-    if logged?('for visiting') || logged?('Please come again!')
+    if LOGGED_OUT_MATCHERS.any? { |v| logged?(v) }
       log("Logout successful for #{AI_NAME}", :warn)
     else
       log('Disconnected ungracefully.', :error)
@@ -84,7 +84,7 @@ class ConnectTelnet
     sleep LOGIN_TOLERANCE
     if logged?('try again!')
       puts "Password failed for #{AI_NAME}".red
-    elsif logged?('already logged on here') || logged?('Last logged in')
+    elsif LOGGED_IN_MATCHERS.any? { |v| logged?(v) }
       puts "-=> Logged in as #{AI_NAME} (`tail -f #{LOG}` to watch)\n".green
     else
       puts "Login failed for #{AI_NAME} (see #{LOG})".red
