@@ -72,7 +72,7 @@ module Strings
   end
 
   def handle_truncated_response(str)
-    return TRUNCATED_MSG if str.match(/\[\[\[TRUNCATED\]\]\]/)
+    return MSG_TRUNCATED if str.match(/\[\[\[TRUNCATED\]\]\]/)
     return str
   end
 

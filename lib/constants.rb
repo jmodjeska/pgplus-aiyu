@@ -66,6 +66,8 @@ MSG_TRUNCATED       = 'Sorry, there was more but I truncated it due to length.'
 ERR_NO_PROFILE      = 'Profile does not exist:'
 LOGGED_IN_MATCHERS  = ['already logged on here', 'Last logged in'].freeze
 LOGGED_OUT_MATCHERS = ['for visiting', 'Please come again!'].freeze
+GREETING_SOCIALS    = %w[bow wave hi5 worp run moon hi hack frolic].freeze
+IDLE_COMMANDS       = %w[main idle look].freeze
 
 # Config Strings (please keep the original URL intact for license and credit)
 DESCRIPTION = "^Y.*^N ChatGPT-connected AI bot v#{VERSION} ^R<3^N ^P^^_^^^N"

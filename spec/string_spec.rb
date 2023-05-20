@@ -71,7 +71,7 @@ describe Strings do
         'and the obnoxious, frozen stupidity of grown-ups who still get off '\
         'on making jokes about the unchosen features of other human beings. '\
         "Jokes about one's height, hair loss, one's name. ",
-        'Sorry, there was more, but I truncated it due to length.'
+        'Sorry, there was more but I truncated it due to length.'
       ]
     )
   end

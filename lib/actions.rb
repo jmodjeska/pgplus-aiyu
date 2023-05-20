@@ -39,15 +39,13 @@ module Actions
   end
 
   def send_greeting(conn)
-    cmd = %w[bow wave hi5].sample
-    conn.send(cmd)
+    conn.send(GREETING_SOCIALS.sample)
   end
 
   def do_idle_command(conn)
     t = Time.now
     return unless (t.min % IDLE_INTERVAL).zero? && (t.sec == IDLE_CMD_SECS)
-    cmd = %w[main idle look].sample
-    conn.send(cmd)
+    conn.send(IDLE_COMMANDS.sample)
   end
 
   def tell(conn, player, msg)
@@ -71,11 +69,11 @@ module Actions
   end
 
   def disclaim(conn, player, msg, stage = 1)
-    d = YAML.load_file(DISCLAIMER)
     if msg.downcase == 'i agree'
       File.write(DISCLAIMER_LOG, "#{player}: '#{Time.now}'\n", mode: 'a+')
       stage = 2
     end
+    d = YAML.load_file(DISCLAIMER)
     d["STAGE #{stage}"].each { |_k, v| tell(conn, player, v.gsub(/\s+/, ' ')) }
   end
 end
