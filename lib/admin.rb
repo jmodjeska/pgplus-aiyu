@@ -42,7 +42,7 @@ module Admin
     case data_to_list
     when 'consents' then list_consents(conn, player)
     when 'sessions' then list_sessions(conn, player, session)
-    else conn.send(".#{task[:p]} I don't know how to list '#{data_to_list}'.")
+    else conn.send(".#{player} I don't know how to list '#{data_to_list}'.")
     end
   end
 
