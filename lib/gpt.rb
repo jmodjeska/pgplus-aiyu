@@ -65,7 +65,7 @@ class ChatGPT
     response = JSON.parse(json_response)
     reply = response.dig('choices', 0, 'message', 'content')
     finish_reason = response.dig('choices', 0, 'finish_reason')
-    reply += ' ... [[[TRUNCATED]]]' if finish_reason == 'length'
+    reply += TXT_TRUNCATED if finish_reason == 'length'
     return reply.gsub(/\n+/, ' ')
   end
 end

@@ -12,9 +12,8 @@ DEFAULT_PROFILE = CONFIG['default_profile']
 
 # CLI args
 o = Optimist.options do
-  banner "\nSynopsis: ruby aiyu.rb\n\n"
-  opt :profile, 'Specify a talker profile',
-      default: DEFAULT_PROFILE
+  banner "\n#{USAGE_BANNER}\n\n"
+  opt :profile, 'Specify a talker profile', default: DEFAULT_PROFILE
 end
 
 # Load profile data

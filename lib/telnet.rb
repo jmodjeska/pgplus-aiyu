@@ -34,13 +34,13 @@ class ConnectTelnet
   end
 
   def done
-    @client.cmd('wave')
+    @client.cmd(LOGOUT_SOCIALS.sample)
     @client.cmd('quit')
     sleep LOGOUT_TOLERANCE
     if LOGGED_OUT_MATCHERS.any? { |v| logged?(v) }
       log("Logout successful for #{AI_NAME}", :warn)
     else
-      log('Disconnected ungracefully.', :error)
+      log(ERR_DISCONNECT, :error)
     end
   end
 

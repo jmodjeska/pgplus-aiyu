@@ -49,8 +49,7 @@ module Actions
   end
 
   def tell(conn, player, msg)
-    msg = msg.dup.force_encoding('ASCII-8BIT')
-    chunks = process_message(msg)
+    chunks = process_message(force_ascii_8(msg))
     chunks.each do |chunk|
       conn.send(".#{player} #{chunk}")
       sleep COMMAND_PACING
@@ -58,8 +57,7 @@ module Actions
   end
 
   def room_or_channel_say(conn, player, msg, cmd)
-    msg = msg.dup.force_encoding('ASCII-8BIT')
-    chunks = process_message(msg)
+    chunks = process_message(force_ascii_8(msg))
     chunks[0][0] = chunks[0][0].downcase
     conn.send("#{cmd} #{player}, #{chunks[0]}")
     chunks.drop(1).each do |chunk|

@@ -20,7 +20,7 @@ class Main
 
   def resolve_process_conflict
     return unless SystemOps.process_conflict
-    abort "-=> Couldn't terminate existing process #{pid}".red
+    abort "-=> #{ERR_TERMINATE_FAIL} #{pid}".red
   end
 
   def initialize_persistent_components(session, social)
@@ -32,7 +32,7 @@ class Main
     @conn = ConnectTelnet.new
     @que = Queues.new(@conn, @social)
   rescue Net::ReadTimeout
-    abort "-=> #{CONN_TIMED_OUT}".red
+    abort "-=> #{ERR_CONN_TIMED_OUT}".red
   end
 
   def supervisor_loop
@@ -79,8 +79,7 @@ class Main
   def process_chat_request(task)
     return unless verify_disclaimer(task)
     hist = @session.get_history(task[:p], task[:callback])
-    task[:response] =
-      ChatGPT.new(task[:content], hist, @session.temp).chat
+    task[:response] = ChatGPT.new(task[:content], hist, @session.temp).chat
     do_callback(@conn, task)
     @session.append(
       task[:p], [task[:content], task[:response]], task[:callback]
@@ -95,7 +94,7 @@ class Main
 
   def attempt_reconnection(err)
     process_shutdown_event(:recon) unless @session.recons_available
-    log("Connection interrupted: #{err}. Forcing reconnect.", :warn)
+    log("#{ERR_CONN_INTERRUPT} #{err}", :warn)
     @conn.done
     @session.log_recon
     Main.new(@session, @social)

@@ -57,17 +57,25 @@ ROOM_MESSAGES       = %w[says asks exclaims].freeze
 MESSAGE_CHUNK_SIZE  = 250 # chars
 
 # Static Strings
+USAGE_BANNER        = 'Synopsis: ruby aiyu.rb'
 SHUTDOWN_MAX_RECON  = 'Max reconnects reached. Exiting.'
 SHUTDOWN_GENERAL    = 'Detected shutdown event or interrupt. Exiting.'
-CONN_TIMED_OUT      = 'Timed out after initial connection (check prompt?)'
 RECON_SIGNAL_MSG    = 'Received Test Reconnect Signal'
 INVALID_ENCODING    = 'Invalid encoding detected. Resetting queue.'
+TXT_TRUNCATED       = ' ... [[[TRUNCATED]]]'
 MSG_TRUNCATED       = 'Sorry, there was more but I truncated it due to length.'
+ERR_CONN_TIMED_OUT  = 'Timed out after initial connection (check prompt?)'
+ERR_CONN_INTERRUPT  = 'Connection interrupted; forcing reconnect:'
 ERR_NO_PROFILE      = 'Profile does not exist:'
+ERR_INVALID_PLAUER  = "Can't process callback for invalid player:"
+ERR_UNDEF_CALLBACK  = 'Undefined callback command:'
+ERR_TERMINATE_FAIL  = "Couldn't terminate existing process"
+ERR_DISCONNECT      = 'Disconnected ungracefully'
 LOGGED_IN_MATCHERS  = ['already logged on here', 'Last logged in'].freeze
 LOGGED_OUT_MATCHERS = ['for visiting', 'Please come again!'].freeze
 GREETING_SOCIALS    = %w[bow wave hi5 worp run moon hi hack frolic].freeze
 IDLE_COMMANDS       = %w[main idle look].freeze
+LOGOUT_SOCIALS      = %w[wave bye].freeze
 
 # Config Strings (please keep the original URL intact for license and credit)
 DESCRIPTION = "^Y.*^N ChatGPT-connected AI bot v#{VERSION} ^R<3^N ^P^^_^^^N"

@@ -84,6 +84,10 @@ module Strings
     return str
   end
 
+  def force_ascii_8(str)
+    return str.dup.force_encoding('ASCII-8BIT')
+  end
+
   def log(str, level)
     levels = {
       info: 'green',
