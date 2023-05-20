@@ -70,8 +70,7 @@ module Admin
     when 'get temperature'
       conn.send(".#{task[:p]} Temperature is currently #{session.temp}")
     when /^set temperature ([+-]?([0-9]*[.])?[0-9]+)$/
-      temp = ::Regexp.last_match(1)
-      conn.send(".#{task[:p]} Temperature is now #{session.update_temp(temp)}")
+      conn.send(".#{task[:p]} Temperature is now #{session.update_temp($1)}")
     end
   end
 
