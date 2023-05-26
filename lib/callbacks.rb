@@ -19,7 +19,7 @@ module Callbacks
 
   def report_invalid_player(player)
     return false unless player.nil? || player.length < 2
-    log("#{ERR_INVALID_PLAUER} #{player}", :warn)
+    log("#{ERR_INVALID_PLAYER} #{player}", :warn)
   end
 
   def parse_tell_callback(conn, task)
@@ -38,6 +38,7 @@ module Callbacks
   end
 
   def parse_social_callback(conn, task)
+    return if OTHER_ROBOTS.any? { |s| s.casecmp(task[:p]).zero? }
     conn.send("#{task[:content]} #{task[:p]}")
   end
 end

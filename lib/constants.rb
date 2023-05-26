@@ -35,6 +35,7 @@ LOGIN_TOLERANCE     =    2   # secs
 LOGOUT_TOLERANCE    =    0.4 # secs
 CLEAR_LOG_INTERVAL  =   96   # hours
 IDLE_INTERVAL       =   10   # mins
+HARASS_INTERVAL     =   60   # mins
 Q_READ_INTERVAL     =    2   # secs
 SESSION_DURATION    =    2   # hours
 MAX_RECONNECTS      =    2   # per hour
@@ -44,6 +45,7 @@ ONE_HOUR            = 3600   # secs
 # Static time parts
 CLEAR_LOG_SECS      =   13
 IDLE_CMD_SECS       =   23
+HARASS_CMD_SECS     =   33
 LOG_TIME_MINS       =   38
 LOG_TIME_SECS       =   43
 
@@ -64,18 +66,21 @@ RECON_SIGNAL_MSG    = 'Received Test Reconnect Signal'
 INVALID_ENCODING    = 'Invalid encoding detected. Resetting queue.'
 TXT_TRUNCATED       = ' ... [[[TRUNCATED]]]'
 MSG_TRUNCATED       = 'Sorry, there was more but I truncated it due to length.'
-ERR_CONN_TIMED_OUT  = 'Timed out after initial connection (check prompt?)'
-ERR_CONN_INTERRUPT  = 'Connection interrupted; forcing reconnect:'
-ERR_NO_PROFILE      = 'Profile does not exist:'
-ERR_INVALID_PLAUER  = "Can't process callback for invalid player:"
-ERR_UNDEF_CALLBACK  = 'Undefined callback command:'
-ERR_TERMINATE_FAIL  = "Couldn't terminate existing process"
-ERR_DISCONNECT      = 'Disconnected ungracefully'
 LOGGED_IN_MATCHERS  = ['already logged on here', 'Last logged in'].freeze
 LOGGED_OUT_MATCHERS = ['for visiting', 'Please come again!'].freeze
 GREETING_SOCIALS    = %w[bow wave hi5 worp run moon hi hack frolic].freeze
 IDLE_COMMANDS       = %w[main idle look].freeze
 LOGOUT_SOCIALS      = %w[wave bye].freeze
+HARASS_SOCIALS      = %w[peer fondle fart cackle spank pie scouse].freeze
+
+# Static Error Messages
+ERR_CONN_TIMED_OUT  = 'Timed out after initial connection (check prompt?)'
+ERR_CONN_INTERRUPT  = 'Connection interrupted; forcing reconnect:'
+ERR_NO_PROFILE      = 'Profile does not exist:'
+ERR_INVALID_PLAYER  = "Can't process callback for invalid player:"
+ERR_UNDEF_CALLBACK  = 'Undefined callback command:'
+ERR_TERMINATE_FAIL  = "Couldn't terminate existing process"
+ERR_DISCONNECT      = 'Disconnected ungracefully'
 
 # Config Strings (please keep the original URL intact for license and credit)
 DESCRIPTION = "^Y.*^N ChatGPT-connected AI bot v#{VERSION} ^R<3^N ^P^^_^^^N"

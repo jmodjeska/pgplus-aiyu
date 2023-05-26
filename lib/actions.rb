@@ -48,6 +48,21 @@ module Actions
     conn.send(IDLE_COMMANDS.sample)
   end
 
+  def harass_idle_person(conn)
+    t = Time.now
+    return unless (t.min % HARASS_INTERVAL).zero? && (t.sec == HARASS_CMD_SECS)
+    i = check_most_idle(conn)
+    conn.send("#{HARASS_SOCIALS.sample} #{i}") unless i.nil?
+  end
+
+  def check_most_idle(conn)
+    idle = clean_ansi(conn.send('idle'))
+    return unless idle.match(/(\d+) people here/) || $1 == 1
+    i = idle.scan(/(\d+:\d+:\d+:\d+) - (.*?) /).to_h
+    OTHER_ROBOTS.each { |r| i.delete_if { |_k, v| v.downcase == r.downcase } }
+    return i.max_by { |k, _v| k }[1]
+  end
+
   def tell(conn, player, msg)
     chunks = process_message(force_ascii_8(msg))
     chunks.each do |chunk|

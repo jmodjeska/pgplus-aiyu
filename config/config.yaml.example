@@ -1,6 +1,7 @@
 default_profile: 'test'
 admin_access: 'raindog'
-ai_name: 'aiyu
+ai_name: 'aiyu'
+other_robots: ['warden', 'skippy', 'flossy']
 
 profiles:
   test:

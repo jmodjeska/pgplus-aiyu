@@ -49,6 +49,7 @@ class Main
   def do_timed_actions
     log_time
     do_idle_command(@conn)
+    harass_idle_person(@conn)
     clear_log
   end
 

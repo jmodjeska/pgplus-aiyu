@@ -8,6 +8,7 @@ require 'yaml'
 CONFIG          = YAML.load_file(CONFIG_FILE)
 AI_NAME         = CONFIG['ai_name']
 ADMIN_NAME      = CONFIG['admin_access']
+OTHER_ROBOTS    = CONFIG['other_robots']
 DEFAULT_PROFILE = CONFIG['default_profile']
 
 # CLI args
