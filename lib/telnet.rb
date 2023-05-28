@@ -57,20 +57,20 @@ class ConnectTelnet
 
   def client_host_config
     return {
-      'Host' => IP,
-      'Port' => PORT,
+      'Host'   => IP,
+      'Port'   => PORT,
       'Prompt' => /#{PROMPT} \z/n
     }
   end
 
   def client_output_config
     return {
-      'Timeout' => TELNET_TIMEOUT,
-      'Output_log' => LOG,
-      'Telnetmode' => true,
-      'Binmode' => true,
+      'Timeout'      => TELNET_TIMEOUT,
+      'Output_log'   => LOG,
+      'Telnetmode'   => true,
+      'Binmode'      => true,
       'Debug_Output' => true,
-      'Dump_Log' => true
+      'Dump_Log'     => true
     }
   end
 

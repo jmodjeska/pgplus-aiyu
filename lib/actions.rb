@@ -6,6 +6,8 @@ require_relative 'strings'
 module Actions
   include Strings
 
+  class TestReconnectSignal < StandardError; end
+
   def configure_player_settings(conn)
     sleep LOGIN_TOLERANCE
     toggle_pager(conn, 'unpaged')

@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
-Dir[File.join(__dir__, '*.rb')].sort.each { |file| require file }
-
 # Main application flow: listen for events and process queues
 class Main
   include Actions
-  include Admin
   include Callbacks
 
   def initialize(session = nil, social = nil)
@@ -66,7 +63,8 @@ class Main
   end
 
   def process_admin_cmd(task)
-    do_admin_cmd(@conn, task, @session)
+    ac = Admin.new(@conn, task, @session)
+    ac.do_admin_cmd
   end
 
   def process_social(task)

@@ -2,85 +2,87 @@
 
 require_relative 'actions'
 
-# Commands that the designated admin can directly issue to Aiyu
-module Admin
+# Process commands that the designated admin can directly issue to Aiyu
+class Admin
   include Actions
 
-  ADMIN_COMMANDS = [
-    'reconnect', 'list consents', 'list sessions', 'get temperature',
-    'set temperature <new temperature>', 'session for <name or channel>',
-    'help'
-  ].freeze
-
-  def do_admin_cmd(conn, task, session)
-    return unless check_valid_admin(conn, task[:p])
-    case task[:callback]
-    when 'help' then help_response(conn, task[:p])
-    when 'reconnect' then test_reconnect
-    when /list (.*?)$/ then list_data(conn, task[:p], session, $1)
-    when /[g|s]et temperature/ then admin_temperature(conn, task, session)
-    when /^session for (.*?)$/ then show_session(conn, task, session, $1)
-    else conn.send(".#{task[:p]} I don't know how to do '#{task[:callback]}'.")
-    end
+  def initialize(conn, task, session)
+    @cmd = task[:callback].split.first
+    @p = task[:p]
+    @s = session
+    @conn = conn
+    @task = task
+    @clist = ADMIN_COMMANDS
   end
 
-  class TestReconnectSignal < StandardError; end
-
-  def test_reconnect
-    raise TestReconnectSignal, 'Received Test Reconnect Signal'
+  def do_admin_cmd
+    return unless valid_admin?
+    return unless valid_admin_cmd?
+    __send__(@clist[@cmd][:cmd])
   end
 
   private
 
-  def check_valid_admin(conn, player)
-    return true if player == ADMIN_NAME
-    conn.send(".#{ADMIN_NAME} #{player} just tried to execute #{callback}")
+  def valid_admin?
+    return true if @p == ADMIN_NAME
+    @conn.send(".#{ADMIN_NAME} #{@p} just tried to execute #{@cmd}")
     return false
   end
 
-  def list_data(conn, player, session, data_to_list)
-    case data_to_list
-    when 'consents' then list_consents(conn, player)
-    when 'sessions' then list_sessions(conn, player, session)
-    else conn.send(".#{player} I don't know how to list '#{data_to_list}'.")
+  def valid_admin_cmd?
+    return true if @clist.key?(@cmd)
+    @conn.send(".#{@p} I don't know how to do '#{@cmd}'.")
+    return false
+  end
+
+  def args
+    return @task[:callback].split[1..]
+  end
+
+  def help_response
+    cmds = @clist.flat_map { |k, v| v[:options]&.map { |o| "#{k} #{o}" } || k }
+    tell(@conn, @p, "#{ADMIN_HELPMSG} #{cmds.join(', ')}")
+  end
+
+  def test_reconnect
+    raise TestReconnectSignal, RECON_SIGNAL_MSG
+  end
+
+  def list_data
+    case args[0]
+    when 'consents' then list_consents
+    when 'sessions' then list_sessions
+    else @conn.send(".#{@p} I don't know how to list '#{args[0]}'.")
     end
   end
 
-  def list_consents(conn, player)
-    conn.send(".#{player} The following people have consented to interact:")
-    tell(conn, player, YAML.load_file(DISCLAIMER_LOG).keys.join(', '))
+  def list_consents
+    @conn.send(".#{@p} #{ADMIN_INTERACT}")
+    tell(@conn, @p, YAML.load_file(DISCLAIMER_LOG).keys.join(', '))
   end
 
-  def list_sessions(conn, player, session)
-    if session.session.empty?
-      conn.send(".#{player} No active sessions.")
-      return
-    end
-    list = session.session.keys.join(', ')
-    tell(conn, player, "The following people have active sessions: #{list}")
-  end
-
-  def help_response(conn, player)
-    conn.send(".#{player} I can do the following admin commands:")
-    tell(conn, player, ADMIN_COMMANDS.join(', '))
-  end
-
-  def admin_temperature(conn, task, session)
-    case task[:callback]
-    when 'get temperature'
-      conn.send(".#{task[:p]} Temperature is currently #{session.temp}")
-    when /^set temperature ([+-]?([0-9]*[.])?[0-9]+)$/
-      conn.send(".#{task[:p]} Temperature is now #{session.update_temp($1)}")
-    end
-  end
-
-  def show_session(conn, task, session, target)
-    hist = session.read_history(target)
-    if hist.nil?
-      conn.send(".#{task[:p]} I don't have any session data for #{target}")
+  def list_sessions
+    if @s.session.empty?
+      @conn.send(".#{@p} #{ADMIN_NOSESSIONS}")
     else
-      conn.send(".#{task[:p]} Here is the session data for #{target}")
-      tell(conn, task[:p], hist.to_s)
+      list = @s.session.keys.join(', ')
+      tell(@conn, @p, "#{ADMIN_SESSIONS} #{list}")
+    end
+  end
+
+  def session_data
+    hist = @s.read_history(args[0])
+    msg = hist.nil? ? "I don't have any" : 'Here is the'
+    @conn.send(".#{@p} #{msg} session data for #{args[0]}")
+    tell(@conn, @p, hist.to_s) unless hist.nil?
+  end
+
+  def admin_temp
+    msg = ".#{@p} Temperature"
+    case args[0]
+    when 'get' then @conn.send("#{msg} is #{@s.temp}")
+    when 'set' then @conn.send("#{msg} set to #{@s.update_temp(args[1])}")
+    else @conn.send(".#{@p} I don't know how to do that.")
     end
   end
 end

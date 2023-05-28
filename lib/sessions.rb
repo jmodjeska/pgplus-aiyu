@@ -15,12 +15,19 @@ class Sessions
     @session = {}
     @history = {}
     @recons = []
-    @temp = DEFAULT_TEMPERATURE
+    @temp = DEFAULT_TEMP
     puts '-=> Session manager initialized'
   end
 
-  def expired(player)
-    return (@session[player] + ONE_HOUR * SESSION_DURATION) < Time.now
+  def expired(scope)
+    return (@session[scope] + ONE_HOUR * SESSION_DURATION) < Time.now
+  end
+
+  def seed_msgset
+    return [{
+      "role": 'system',
+      "content": "#{GPT_ROLE} #{AI_NAME}."
+    }]
   end
 
   def encode_msgset(msgset)
@@ -51,16 +58,18 @@ class Sessions
   end
 
   def get_history(player, command)
-    hist = command == :tell ? player : command
-    if @session.key?(hist) && !expired(hist) && @history.key?(hist)
-      @session[hist] = Time.now
-      return @history[hist]
-    elsif @session.key?(hist)
-      @session.delete(hist)
-      @history.delete(hist)
+    scope = command == :tell ? player : command
+    if @session.key?(scope) && !expired(scope) && @history.key?(scope)
+      @session[scope] = Time.now
+      return @history[scope]
     end
-    @session[hist] = Time.now
+    reset_session_and_history(scope)
     return []
+  end
+
+  def reset_session_and_history(scope)
+    @history.delete(scope)
+    @session[scope] = Time.now
   end
 
   def read_history(str)
@@ -68,12 +77,9 @@ class Sessions
   end
 
   def append(player, msgset, command)
-    history_scope = command == :tell ? player : command
-    unless @history.key?(history_scope)
-      seed_msgset = [{ "role": 'system', "content": "#{GPT_ROLE} #{AI_NAME}." }]
-      @history[history_scope] = seed_msgset
-    end
-    @history[history_scope].concat encode_msgset(msgset)
-    return @history[history_scope]
+    scope = command == :tell ? player : command
+    @history[scope] = seed_msgset unless @history.key?(scope)
+    @history[scope].concat encode_msgset(msgset)
+    return @history[scope]
   end
 end
