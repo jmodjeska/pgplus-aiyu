@@ -106,3 +106,4 @@ Should you grant `robot` to aiyu? YMMV depending on your talker's configuration.
 * [PG+ Test Harness](https://github.com/jmodjeska/pgplus-test)
 * [PG+ Short Link Generator](https://github.com/jmodjeska/pgplus-shortlink)
 * [PG+ Cocktail Recipe](https://github.com/jmodjeska/pgplus-cocktail)
+* [PG+ Threading](https://github.com/jmodjeska/pgplus-threads)
